@@ -23,11 +23,11 @@ def build_graph(data_path, num_sample=500):
 
 
 
-g, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv')
-print(g)
-
-nx.draw(G=g,node_size=10)
-plt.show()
+# g, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv')
+# print(g)
+#
+# nx.draw(G=g,node_size=10)
+# plt.show()
 
 
 

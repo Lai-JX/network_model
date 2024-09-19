@@ -9,7 +9,10 @@ def build_graph(data_path, num_sample=500):
     # 读取txt文件
     with open(data_path, 'r') as f:
         lines = f.readlines()
-    edges = random.sample(lines[1:num_sample+1], num_sample)
+    if num_sample is None:
+        edges = lines[1:]
+    else:
+        edges = random.sample(lines[1:num_sample+1], num_sample)
 
     # 创建节点列表并找出唯一的节点ID
     nodes = set()

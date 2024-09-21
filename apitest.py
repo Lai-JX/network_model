@@ -7,7 +7,8 @@ from main import build_graph
 
 # build graph
 g, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', None, )
-random.seed(int(dt.datetime.now().timestamp() * 1000))
+random.seed(2024)
+# random.seed(int(dt.datetime.now().timestamp() * 1000))
 for i in range(37700 - 2000):
     removed_edge = random.sample(list(g.nodes), 1)[0]
     g.remove_node(removed_edge)
@@ -28,9 +29,10 @@ plt.show()
 print('diameter:', nx.diameter(g))
 
 # clustering coefficient
-from cluster_coefficient import average_cluster_coefficient
+from cluster_coefficient import average_cluster_coefficient, draw_cluster_coefficient_distribution
 
 print('average clustering coefficient:', average_cluster_coefficient(g))
+draw_cluster_coefficient_distribution(g)
 
 # average path length (of each connected component)
 component_count = 1

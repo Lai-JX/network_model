@@ -6,7 +6,7 @@ from sqlalchemy import false
 from main import build_graph
 
 # build graph
-g, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', 500)
+g, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', 1000)
 print(g)
 
 # draw graph

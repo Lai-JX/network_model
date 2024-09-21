@@ -36,7 +36,6 @@ def intentional_attack_edge_betweenness(g, attacked_edge=None):
     g.remove_edge(*attacked_edge)
     return g
 
-
 def random_attack_edge_betweenness(g):
     random.seed(int(dt.datetime.now().timestamp() * 1000))
     g = nx.Graph(g)
@@ -44,12 +43,3 @@ def random_attack_edge_betweenness(g):
     attacked_betweenness = nx.edge_betweenness_centrality(g)[attacked_edge]
     g.remove_edge(*attacked_edge)
     return g, attacked_edge, attacked_betweenness
-
-
-def random_attack_node_betweenness(g):
-    random.seed(int(dt.datetime.now().timestamp() * 1000))
-    g = nx.Graph(g)
-    attacked_node = random.sample(list(g.nodes), 1)[0]
-    attacked_betweenness = nx.betweenness_centrality(g)[attacked_node]
-    g.remove_node(attacked_node)
-    return g, attacked_node, attacked_betweenness

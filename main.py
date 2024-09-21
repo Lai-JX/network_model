@@ -1,6 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
+random.seed(2024)
 
 draw_seed = 2024
 

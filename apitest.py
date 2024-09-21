@@ -1,10 +1,17 @@
+import random
+
 import networkx as nx
 import matplotlib.pyplot as plt
-
+import datetime as dt
 from main import build_graph
 
 # build graph
-g, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', 500)
+g, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', None, )
+random.seed(2024)
+# random.seed(int(dt.datetime.now().timestamp() * 1000))
+for i in range(37700 - 2000):
+    removed_edge = random.sample(list(g.nodes), 1)[0]
+    g.remove_node(removed_edge)
 g = g.subgraph(sorted(nx.connected_components(g), key=len, reverse=True)[0])
 print(g)
 
@@ -22,9 +29,10 @@ plt.show()
 print('diameter:', nx.diameter(g))
 
 # clustering coefficient
-from cluster_coefficient import average_cluster_coefficient
+from cluster_coefficient import average_cluster_coefficient, draw_cluster_coefficient_distribution
 
 print('average clustering coefficient:', average_cluster_coefficient(g))
+draw_cluster_coefficient_distribution(g)
 
 # average path length (of each connected component)
 component_count = 1
@@ -43,9 +51,11 @@ draw_degree_rank(g)
 from coreness import draw_coreness_distribution, draw_k_core
 
 draw_coreness_distribution(g)
-draw_k_core(g, 3)
-draw_k_core(g, 2)
 draw_k_core(g, 1)
+draw_k_core(g, 2)
+draw_k_core(g, 3)
+draw_k_core(g, 4)
+draw_k_core(g, 5)
 
 # closeness
 from closeness import draw_closeness_distribution
@@ -64,4 +74,10 @@ print('intentionally attacked graph', intentional_attack_edge_betweenness(g))
 random_attacked_g, attacked_edge, attacked_betweenness = random_attack_edge_betweenness(g)
 print('attacked betweenness:', attacked_betweenness)
 print('attacked edge:', attacked_edge)
-print('intentionally attacked graph', random_attacked_g)
+print('randomly attacked graph', random_attacked_g)
+
+random_attacked_g_itr, _, _ = random_attack_edge_betweenness(g)
+for i in range(50):
+    random_attacked_g_itr, _, _ = random_attack_edge_betweenness(random_attacked_g_itr)
+
+print('randomly attacked 50 times graph', random_attacked_g_itr)

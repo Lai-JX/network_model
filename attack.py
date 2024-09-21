@@ -42,8 +42,8 @@ class Attack_base:
         show_frame = Frame(_operation, height= 500)
         show_frame.pack()
 
-        attack_edge_frame = Frame(_operation)
-        attack_edge_frame.pack(expand=True)
+        attack_frame = Frame(_operation)
+        attack_frame.pack(expand=True)
 
 
         # 创建行标题的 Treeview
@@ -81,17 +81,20 @@ class Attack_base:
         # 放置主表格
         tree.grid(row=0, column=1, sticky="nsew")
 
-       
-        tk.Label(attack_edge_frame, text="攻击边:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=5, sticky="w", columnspan=2)
-        tk.Button(attack_edge_frame, text="开始一次攻击", command=self.attack_edge).grid(row=1, column=0, padx=(20,10), sticky="w", columnspan=2)
+        self.set_attack_frame(attack_frame)
+        tk.Button(attack_frame, text="重置", command=self.reset, width=10).grid(row=4, column=0, pady=15, padx=10, sticky="w", columnspan=2)
 
-        tk.Label(attack_edge_frame, text="攻击点:", font=("黑体",14)).grid(row=2, column=0, padx=10, pady=5, sticky="w", columnspan=2)
-        tk.Button(attack_edge_frame, text="开始一次攻击", command=self.attack_node).grid(row=3, column=0, padx=(20,10), sticky="w", columnspan=2)
-
-        tk.Button(attack_edge_frame, text="重置", command=self.reset, width=10).grid(row=4, column=0, pady=15, padx=10, sticky="w", columnspan=2)
         
         mainloop()
+    
+    def set_attack_frame(self, attack_frame):
+        tk.Label(attack_frame, text="攻击边:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=5, sticky="w", columnspan=2)
+        tk.Button(attack_frame, text="开始一次攻击", command=self.attack_edge).grid(row=1, column=0, padx=(20,10), sticky="w", columnspan=2)
 
+        tk.Label(attack_frame, text="攻击点:", font=("黑体",14)).grid(row=2, column=0, padx=10, pady=5, sticky="w", columnspan=2)
+        tk.Button(attack_frame, text="开始一次攻击", command=self.attack_node).grid(row=3, column=0, padx=(20,10), sticky="w", columnspan=2)
+
+        
     def reset(self):
         self._g = copy.deepcopy(self.G)
 
@@ -107,7 +110,7 @@ class Attack_base:
         self.modify_data_in_table(0,1, self.g_diameter)
         self.modify_data_in_table(1,1, self.average_clustering)
         self.modify_data_in_table(2,1, self.average_shortest_path_length)
-        self.modify_data_in_table(3,1, self.connected_component)
+        self.modify_data_in_table(3,1, self.connected_components)
 
 
 

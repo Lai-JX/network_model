@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import random
 random.seed(2024)
 
-def build_graph(data_path, num_sample=500):
+def build_graph(data_path, num_sample=10000):
     G = nx.Graph()
 
     # 读取txt文件

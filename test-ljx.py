@@ -9,7 +9,7 @@ G, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', 1000)
 print(G)
 # Gcc = g.subgraph(sorted(nx.connected_components(g), key=len, reverse=True)[0])
 
-draw_graph(G)
+draw_graph(G, 'network.png')
 
 H = find_subgraph(G)
 print(H)

@@ -1,6 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
+random.seed(2024)
 
 
 def build_graph(data_path, num_sample=10000, seed=2024,):

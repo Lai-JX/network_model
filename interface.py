@@ -58,7 +58,7 @@ def _build_graph():
     seed = dataset_var.get()
     global G
     G = None
-    G, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', 8000, seed)
+    G, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', 2000, seed)
     print("before: ", G)
     G = find_subgraph(G)
     print("after: ",G)
@@ -207,7 +207,7 @@ coreness_output.grid(row=1, column=3, pady=5,padx=10)
 tk.Label(operation3, text="计算图的coreness:", font=("黑体",14)).grid(row=2, column=0, padx=10, pady=5, sticky="w",columnspan=4)
 tk.Button(operation3, text="1-core", command=show_1core_distribution).grid(row=3, column=0, padx=(20,10), pady=5)
 tk.Button(operation3, text="2-core", command=show_2core_distribution).grid(row=3, column=1, padx=10,  pady=5)
-tk.Button(operation3, text="3-core", command=show_1core_distribution).grid(row=3, column=2, padx=10,  pady=5)
+tk.Button(operation3, text="3-core", command=show_3core_distribution).grid(row=3, column=2, padx=10,  pady=5)
 
 # 测试图的鲁棒性
 tk.Label(operation3, text="测试图的鲁棒性:").grid(row=4, column=0, padx=10, pady=5, sticky="w",columnspan=4)

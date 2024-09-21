@@ -58,10 +58,11 @@ def _build_graph():
     seed = dataset_var.get()
     global G
     G = None
-    G, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', 200, seed)
+    G, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', 8000, seed)
+    print("before: ", G)
     G = find_subgraph(G)
-    print(G)
-    print(list(G.nodes)[0])
+    print("after: ",G)
+
     draw_graph(G, f'./data/network-{seed}.png', False)
     _image = ImageTk.PhotoImage(Image.open(f'./data/network-{seed}.png').resize((1200,600)))     # .resize((800,400))
 

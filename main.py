@@ -14,7 +14,7 @@ def build_graph(data_path, num_sample=10000, seed=2024,):
     else:
         print('seed:',seed)
         random.seed(seed)
-        edges = random.sample(lines[1:num_sample+1], num_sample)
+        edges = random.sample(lines[1:], num_sample)
 
     # 创建节点列表并找出唯一的节点ID
     nodes = set()
@@ -26,71 +26,71 @@ def build_graph(data_path, num_sample=10000, seed=2024,):
         G.add_edge(from_node, to_node)
     return G, nodes
 
-def draw_graph(G, save_path=None, is_show=True):
-    '''
-        Draw graph G
-        The node size is determined based on the degree if arg node_size is None.
-    '''
-    #### draw graph ####
-    fig, ax = plt.subplots(figsize=(30, 15))
-    pos = nx.spring_layout(G, k=0.15, seed=4572321)
-    # node_color = [community_index[n] for n in H]
-    # if not isinstance(node_size, list):
-    node_size = [d * 3 for n, d in G.degree()]
-    nx.draw_networkx(
-        G,
-        pos=pos,
-        with_labels=False,
-        # node_color=node_color,
-        node_size=node_size,
-        edge_color="gainsboro",
-        width=1,
-        alpha=0.6,
-    )
+# def draw_graph(G, save_path=None, is_show=True):
+#     '''
+#         Draw graph G
+#         The node size is determined based on the degree if arg node_size is None.
+#     '''
+#     #### draw graph ####
+#     fig, ax = plt.subplots(figsize=(30, 15))
+#     pos = nx.spring_layout(G, k=0.15, seed=4572321)
+#     # node_color = [community_index[n] for n in H]
+#     # if not isinstance(node_size, list):
+#     node_size = [d * 3 for n, d in G.degree()]
+#     nx.draw_networkx(
+#         G,
+#         pos=pos,
+#         with_labels=False,
+#         # node_color=node_color,
+#         node_size=node_size,
+#         edge_color="gainsboro",
+#         width=1,
+#         alpha=0.6,
+#     )
 
-    # Title/legend
-    font = {"color": "k", "fontweight": "bold", "fontsize": 20}
-    # ax.set_title("Gene functional association network (C. elegans)", font)
-    # Change font color for legend
-    font["color"] = "r"
+#     # Title/legend
+#     font = {"color": "k", "fontweight": "bold", "fontsize": 20}
+#     # ax.set_title("Gene functional association network (C. elegans)", font)
+#     # Change font color for legend
+#     font["color"] = "r"
 
-    # ax.text(
-    #     0.80,
-    #     0.10,
-    #     "node color = community structure",
-    #     horizontalalignment="center",
-    #     transform=ax.transAxes,
-    #     fontdict=font,
-    # )
-    # ax.text(
-    #     0.80,
-    #     0.06,
-    #     "node size = betweenness centrality",
-    #     horizontalalignment="center",
-    #     transform=ax.transAxes,
-    #     fontdict=font,
-    # )
+#     # ax.text(
+#     #     0.80,
+#     #     0.10,
+#     #     "node color = community structure",
+#     #     horizontalalignment="center",
+#     #     transform=ax.transAxes,
+#     #     fontdict=font,
+#     # )
+#     # ax.text(
+#     #     0.80,
+#     #     0.06,
+#     #     "node size = betweenness centrality",
+#     #     horizontalalignment="center",
+#     #     transform=ax.transAxes,
+#     #     fontdict=font,
+#     # )
 
-    # Resize figure for label readability
-    # ax.margins(0.1, 0.05)
-    fig.tight_layout()
-    plt.axis("off")
-    if save_path is not None:
-        plt.savefig(save_path)
-    if is_show:
-        plt.show()
-# def draw_graph(g, save_path=None, is_show=True):
-#     fig, ax = plt.subplots(figsize=(20, 15))
-#     pos = nx.spring_layout(g, seed=10396953)
-#     nx.draw_networkx_nodes(g, pos, ax=ax, node_size=20)
-#     nx.draw_networkx_edges(g, pos, ax=ax, alpha=0.4)
-#     ax.set_title("Graph")
-#     ax.set_axis_off()
+#     # Resize figure for label readability
+#     # ax.margins(0.1, 0.05)
 #     fig.tight_layout()
+#     plt.axis("off")
 #     if save_path is not None:
 #         plt.savefig(save_path)
 #     if is_show:
 #         plt.show()
+def draw_graph(g, save_path=None, is_show=True):
+    fig, ax = plt.subplots(figsize=(20, 15))
+    pos = nx.spring_layout(g, seed=10396953)
+    nx.draw_networkx_nodes(g, pos, ax=ax, node_size=20)
+    nx.draw_networkx_edges(g, pos, ax=ax, alpha=0.4)
+    ax.set_title("Graph")
+    ax.set_axis_off()
+    fig.tight_layout()
+    if save_path is not None:
+        plt.savefig(save_path)
+    if is_show:
+        plt.show()
     
 
 

@@ -24,13 +24,13 @@ def build_graph(data_path, num_sample=10000):
         G.add_edge(from_node, to_node)
     return G, nodes
 
-def draw_graph(G, node_size=None):
+def draw_graph(G, save_path=None, node_size=None, is_show=True):
     '''
         Draw graph G
         The node size is determined based on the degree if arg node_size is None.
     '''
     #### draw graph ####
-    fig, ax = plt.subplots(figsize=(20, 15))
+    fig, ax = plt.subplots(figsize=(30, 15))
     pos = nx.spring_layout(G, k=0.15, seed=4572321)
     # node_color = [community_index[n] for n in H]
     if not isinstance(node_size, list):
@@ -70,10 +70,13 @@ def draw_graph(G, node_size=None):
     # )
 
     # Resize figure for label readability
-    ax.margins(0.1, 0.05)
+    # ax.margins(0.1, 0.05)
     fig.tight_layout()
     plt.axis("off")
-    plt.show()
+    if save_path is not None:
+        plt.savefig(save_path)
+    if is_show:
+        plt.show()
     
 
 

@@ -6,10 +6,10 @@ import numpy as np
 
 # build graph
 G, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', 1000)
-print(G)
+print(G.nodes)
 # Gcc = g.subgraph(sorted(nx.connected_components(g), key=len, reverse=True)[0])
-
-draw_graph(G)
+exit(0)
+draw_graph(G, 'network.png')
 
 H = find_subgraph(G)
 print(H)

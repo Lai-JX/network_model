@@ -2,6 +2,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import random
 
+draw_seed = 2024
+
 
 def build_graph(data_path, num_sample=10000, seed=2024,):
     G = nx.Graph()
@@ -79,9 +81,10 @@ def build_graph(data_path, num_sample=10000, seed=2024,):
 #         plt.savefig(save_path)
 #     if is_show:
 #         plt.show()
-def draw_graph(g, save_path=None, is_show=True):
+def draw_graph(g, save_path=None, is_show=True, pos=None):
     fig, ax = plt.subplots(figsize=(20, 15))
-    pos = nx.spring_layout(g, seed=10396953)
+    if pos is None:
+        pos = nx.spring_layout(g, seed=draw_seed)
     nx.draw_networkx_nodes(g, pos, ax=ax, node_size=20)
     nx.draw_networkx_edges(g, pos, ax=ax, alpha=0.4)
     ax.set_title("Graph")
@@ -91,18 +94,20 @@ def draw_graph(g, save_path=None, is_show=True):
         plt.savefig(save_path)
     if is_show:
         plt.show()
+    else:
+        plt.close()
     
 
 
-def find_subgraph(G, delete_degree_min=0):
+def find_subgraph(G):
     '''
         Remove nodes (degree < delete_degree_min)
         Find largest_component 
         Returns the corresponding subgraph
     '''
     # remove low-degree nodes
-    low_degree = [n for n, d in G.degree() if d < delete_degree_min]
-    G.remove_nodes_from(low_degree)
+    # low_degree = [n for n, d in G.degree() if d < delete_degree_min]
+    # G.remove_nodes_from(low_degree)
     print("number_connected_components:",nx.number_connected_components(G))
 
     # components = nx.connected_components(G)

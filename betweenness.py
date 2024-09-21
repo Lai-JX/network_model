@@ -28,6 +28,17 @@ def get_max_betweenness_edge(g):
             max_edge = e
     return max_betweenness, max_edge
 
+def get_max_betweenness_node(g):
+    node_bet = nx.betweenness_centrality(g)
+    max_betweenness = 0
+    max_node = 0
+    for n in node_bet:
+        b = node_bet[n]
+        if b > max_betweenness:
+            max_betweenness = b
+            max_node = n
+    return max_betweenness, max_node
+
 
 def intentional_attack_edge_betweenness(g, attacked_edge=None):
     g = nx.Graph(g)

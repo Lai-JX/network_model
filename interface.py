@@ -147,51 +147,19 @@ def show_3core_distribution():
     image_label.pack()
     mainloop()
 
-def random_attack_window():
+def random_attacks_window():
     from attack import Attack_base
 
     attack = Attack_base(operation3,seed, G, )
     attack.window()
-    # top = Toplevel(operation3, width=800, height=900)
 
-    # graph = Frame(top, width=600, height=900)
-    # graph.pack(side='left')
-    # _operation = Frame(top, width=200, height=900)
-    # _operation.pack(side='left')
+def intentional_attacks_window():
+    from attack import Intentional_Attack
 
-
-    # image_pre = ImageTk.PhotoImage(Image.open(f'./data/network-{seed}.png').resize((600,450)))     # .resize((800,400))
-    # image_label_pre=Label(graph, image=image_pre)
-    # image_label_pre.pack()
-
-    # image_after = ImageTk.PhotoImage(Image.open(f'./data/network-{seed}.png').resize((600,450)))     # .resize((800,400))
-    # image_label_after=Label(graph, image=image_after)
-    # image_label_after.pack()
-
-    # pos = nx.spring_layout(G, seed=draw_seed)
-    # _g = copy.deepcopy(G)
-
-    # def attack_edge():
-    #     global _g
-    #     _g, attacked_edge, attacked_betweenness = random_attack_edge_betweenness(_g)
-    #     print(attacked_edge, attacked_betweenness)
-    #     draw_graph(_g, f'./data/network-{seed}-after.png', False, pos)
-    #     _image = ImageTk.PhotoImage(Image.open(f'./data/network-{seed}-after.png').resize((600,450)))     # .resize((800,400))
-    #     image_label_after.configure(image = _image)
-    #     image_label_after.image = _image      # 这步很重要，防止图片被垃圾回收
-    #     time.sleep(1)
+    attack = Intentional_Attack(operation3,seed, G, )
+    attack.window()
 
 
-    # attack_edge_frame = Frame(_operation)
-    # attack_edge_frame.pack(expand=True)
-    # tk.Label(attack_edge_frame, text="攻击边:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=5, sticky="w", columnspan=2)
-    # # tk.Label(attack_edge_frame,  text="攻击次数:").grid(row=1, column=0, padx=(20,10), pady=5, sticky="w")
-    # # tk.Entry(attack_edge_frame, textvariable=attack_edge_num, width=10).grid(row=1, column=1, padx=10, pady=5, sticky="w")
-    # tk.Button(attack_edge_frame, text="开始一次攻击", command=attack_edge).grid(row=1, column=0, padx=(20,10), sticky="w", columnspan=2)
-
-
-    
-    # mainloop()
 
 
 
@@ -260,8 +228,8 @@ tk.Button(operation3, text="3-core", command=show_3core_distribution).grid(row=3
 
 # 测试图的鲁棒性
 tk.Label(operation3, text="测试图的鲁棒性:").grid(row=4, column=0, padx=10, pady=5, sticky="w",columnspan=4)
-tk.Button(operation3, text="随机的攻击测试", command=random_attack_window).grid(row=4, column=1, columnspan=2)
-tk.Button(operation3, text="有意的攻击测试").grid(row=4, column=2, columnspan=2)
+tk.Button(operation3, text="随机的攻击测试", command=random_attacks_window).grid(row=4, column=1, columnspan=2)
+tk.Button(operation3, text="有意的攻击测试", command=intentional_attacks_window).grid(row=4, column=2, columnspan=2)
 
 
 root.mainloop()

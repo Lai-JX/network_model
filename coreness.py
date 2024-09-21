@@ -15,7 +15,7 @@ def draw_coreness_distribution(g):
     plt.show()
 
 
-def draw_k_core(g, k):
+def draw_k_core(g, k, save_path=None, is_show=True):
     gk = nx.k_core(g, k)
     fig, ax = plt.subplots(figsize=(20, 15))
     pos = nx.spring_layout(gk, seed=10396953)
@@ -24,4 +24,7 @@ def draw_k_core(g, k):
     ax.set_title(str(k) + "-core of G")
     ax.set_axis_off()
     fig.tight_layout()
-    plt.show()
+    if save_path is not None:
+        plt.savefig(save_path)
+    if is_show:
+        plt.show()

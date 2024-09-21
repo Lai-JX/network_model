@@ -1,9 +1,9 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
-random.seed(2024)
 
-def build_graph(data_path, num_sample=10000):
+
+def build_graph(data_path, num_sample=10000, seed=2024,):
     G = nx.Graph()
 
     # 读取txt文件
@@ -12,6 +12,8 @@ def build_graph(data_path, num_sample=10000):
     if num_sample is None:
         edges = lines[1:]
     else:
+        print('seed:',seed)
+        random.seed(seed)
         edges = random.sample(lines[1:num_sample+1], num_sample)
 
     # 创建节点列表并找出唯一的节点ID
@@ -24,7 +26,7 @@ def build_graph(data_path, num_sample=10000):
         G.add_edge(from_node, to_node)
     return G, nodes
 
-def draw_graph(G, save_path=None, node_size=None, is_show=True):
+def draw_graph(G, save_path=None, is_show=True):
     '''
         Draw graph G
         The node size is determined based on the degree if arg node_size is None.
@@ -33,8 +35,8 @@ def draw_graph(G, save_path=None, node_size=None, is_show=True):
     fig, ax = plt.subplots(figsize=(30, 15))
     pos = nx.spring_layout(G, k=0.15, seed=4572321)
     # node_color = [community_index[n] for n in H]
-    if not isinstance(node_size, list):
-        node_size = [d * 3 for n, d in G.degree()]
+    # if not isinstance(node_size, list):
+    node_size = [d * 3 for n, d in G.degree()]
     nx.draw_networkx(
         G,
         pos=pos,
@@ -77,6 +79,18 @@ def draw_graph(G, save_path=None, node_size=None, is_show=True):
         plt.savefig(save_path)
     if is_show:
         plt.show()
+# def draw_graph(g, save_path=None, is_show=True):
+#     fig, ax = plt.subplots(figsize=(20, 15))
+#     pos = nx.spring_layout(g, seed=10396953)
+#     nx.draw_networkx_nodes(g, pos, ax=ax, node_size=20)
+#     nx.draw_networkx_edges(g, pos, ax=ax, alpha=0.4)
+#     ax.set_title("Graph")
+#     ax.set_axis_off()
+#     fig.tight_layout()
+#     if save_path is not None:
+#         plt.savefig(save_path)
+#     if is_show:
+#         plt.show()
     
 
 

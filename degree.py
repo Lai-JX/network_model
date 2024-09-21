@@ -23,7 +23,7 @@ def draw_degree_distribution(g):
     plt.show()
 
 
-def draw_degree_rank(g):
+def draw_degree_rank(g, save_path=None, is_show=True):
     node_deg_pairs = nx.degree(g)
     degree_sequence = sorted((d for n, d in node_deg_pairs), reverse=True)
     fig, ax = plt.subplots(figsize=(20, 15))
@@ -32,4 +32,7 @@ def draw_degree_rank(g):
     ax.set_ylabel("Degree")
     ax.set_xlabel("Rank")
     fig.tight_layout()
-    plt.show()
+    if save_path is not None:
+        plt.savefig(save_path)
+    if is_show:
+        plt.show()

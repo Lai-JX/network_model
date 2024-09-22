@@ -3,6 +3,9 @@ import random
 import networkx as nx
 import matplotlib.pyplot as plt
 import datetime as dt
+
+import numpy as np
+
 from main import build_graph
 
 # build graph
@@ -11,11 +14,11 @@ g = g.subgraph(sorted(nx.connected_components(g), key=len, reverse=True)[0])
 print(g)
 
 # draw graph
-fig, ax = plt.subplots(figsize=(20, 15))
+fig, ax = plt.subplots(figsize=(12, 9))
 pos = nx.spring_layout(g, seed=2024)
 nx.draw_networkx_nodes(g, pos, ax=ax, node_size=20)
 nx.draw_networkx_edges(g, pos, ax=ax, alpha=0.4)
-ax.set_title("Graph")
+ax.set_title("Graph", fontsize=24)
 ax.set_axis_off()
 fig.tight_layout()
 plt.show()
@@ -45,6 +48,7 @@ draw_degree_rank(g)
 # coreness
 from coreness import draw_coreness_distribution, draw_k_core
 
+print('average coreness:', np.average(list(nx.core_number(g).values())))
 draw_coreness_distribution(g)
 draw_k_core(g, 1)
 draw_k_core(g, 2)

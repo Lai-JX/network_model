@@ -1,6 +1,6 @@
 import networkx as nx
 import plotly.graph_objects as go
-from main import build_graph
+from utils import build_graph
 
 G, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', 2000)
 print(G)

@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import Canvas, Frame, Label
 import networkx as nx
 import random
-from main import build_graph
+from utils import build_graph
 
 
 class GraphVisualizer:

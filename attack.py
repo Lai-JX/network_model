@@ -7,7 +7,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from main import build_graph, find_subgraph, draw_graph, draw_seed
+from utils import build_graph, find_subgraph, draw_graph, draw_seed
 from betweenness import random_attack_edge_betweenness, random_attack_node_betweenness, get_max_betweenness_edge, \
     get_max_betweenness_node, intentional_attack_edge_betweenness,  intentional_attack_node_betweenness
 from degree import intentional_attack_node_degree

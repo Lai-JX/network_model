@@ -5,7 +5,7 @@ from betweenness import intentional_attack_node_betweenness, intentional_attack_
 from closeness import intentional_attack_node_closeness
 from coreness import intentional_attack_node_coreness
 from degree import intentional_attack_node_degree
-from main import build_graph
+from utils import build_graph
 
 # 构建并保存未被攻击的初始图
 g_original, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv')

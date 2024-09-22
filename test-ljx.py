@@ -1,7 +1,7 @@
 from random import sample
 import networkx as nx
 import matplotlib.pyplot as plt
-from main import build_graph, draw_graph, find_subgraph,draw_betweenness_centrality
+from utils import build_graph, draw_graph, find_subgraph,draw_betweenness_centrality
 import numpy as np
 
 # build graph

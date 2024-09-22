@@ -8,7 +8,7 @@ import networkx as nx
 
 # import main
 
-from main import build_graph, find_subgraph, draw_graph, reindex_graph, draw_seed
+from utils import build_graph, find_subgraph, draw_graph, reindex_graph, draw_seed
 from degree import draw_degree_rank
 from betweenness import random_attack_edge_betweenness
 from coreness import draw_k_core

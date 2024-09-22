@@ -6,7 +6,7 @@ import datetime as dt
 
 import numpy as np
 
-from main import build_graph
+from utils import build_graph
 
 # build graph
 g, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv')

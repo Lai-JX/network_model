@@ -260,10 +260,6 @@ class Attack_base:
 
 
     def attack_edge(self):
-        # self._g, attacked_edge, attacked_betweenness = random_attack_edge_betweenness(self._g)
-        # print('attack_edge', self._g, attacked_edge, attacked_betweenness)
-        # self.disable_attack_button(0)
-        # self._g, _, _ = random_attack_edge_betweenness(self._g)
         self.stop_attack = False
 
         attack_num = self.attack_edge_num.get()
@@ -280,15 +276,9 @@ class Attack_base:
             self.update_line_chart()  # 更新折线图
             self.attack_method()
             self.parent_container.update()  # 刷新界面，动态显示
-        # for i in range(100):
-        #     self._g, _, _ = random_attack_edge_betweenness(self._g)
-        # self.attack_method()
-        # self.enable_attack_button()
+
 
     def attack_node(self):
-        # self._g, attacked_node, attacked_betweenness = random_attack_node_betweenness(self._g)
-        # print('attack_node: ',self._g, attacked_node, attacked_betweenness)
-        # self.disable_attack_button(1)
         self.stop_attack = False
         attack_num = self.attack_node_num.get()
         for i in range(attack_num):
@@ -303,11 +293,6 @@ class Attack_base:
             self.update_line_chart()  # 更新折线图
             self.attack_method()
             self.parent_container.update()  # 刷新界面，动态显示
-        # self._g, _, _ = random_attack_node_betweenness(self._g)
-        # for i in range(100):
-        #     self._g, _, _ = random_attack_node_betweenness(self._g)
-        # self.attack_method()
-        # self.enable_attack_button()
 
         
 
@@ -415,11 +400,6 @@ class Intentional_Attack(Attack_base):
 
 
     def attack_edge(self):
-        # max_betweenness, max_edge = get_max_betweenness_edge(self._g)
-        # self._g = nx.Graph(self._g)
-        # self._g.remove_edge(*max_edge)
-        # print('attack_edge: ', self._g, max_edge, max_betweenness)
-        # self.disable_attack_button(0)
         attack_num = self.attack_edge_num.get()
         attack_metric = self.attack_edge_metric.get()
         self.stop_attack = False
@@ -427,7 +407,8 @@ class Intentional_Attack(Attack_base):
             if self.stop_attack:  # 如果标志为True，停止攻击
                 print("Node attack stopped.")
                 break
-            self._g, attacked_edge, _ = edge_function_map[attack_metric](self._g)
+            self._g, attacked_edge, metric_value = edge_function_map[attack_metric](self._g)
+            print(self._g, attacked_edge, metric_value)
             self.removed_elements.append(attacked_edge)
             self.update_removed_display(attacked_edge)  # 更新显示删除的节点
             self.highlight_deleted_node(attacked_edge)  # 高亮被删除的节点
@@ -447,7 +428,8 @@ class Intentional_Attack(Attack_base):
             if self.stop_attack:  # 如果标志为True，停止攻击
                 print("Node attack stopped.")
                 break
-            self._g, attacked_node, _ = node_function_map[attack_metric](self._g)
+            self._g, attacked_node, metric_value = node_function_map[attack_metric](self._g)
+            print(self._g, attacked_node, metric_value)
             self.removed_elements.append(attacked_node)
             self.update_removed_display(attacked_node)  # 更新显示删除的节点
             self.highlight_deleted_node(attacked_node)  # 高亮被删除的节点

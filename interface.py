@@ -4,6 +4,8 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 import networkx as nx
+from anyio import value
+
 # import main
 
 from main import build_graph, find_subgraph, draw_graph, draw_seed
@@ -48,7 +50,7 @@ global G, seed
 # G = find_subgraph(G)
 # draw_graph(G, 'network.png', False)
 
-dataset_var = tk.IntVar()
+dataset_var = tk.IntVar(value=2024)
 
 coefficient_node = tk.StringVar()
 

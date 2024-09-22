@@ -9,9 +9,20 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from main import build_graph, find_subgraph, draw_graph, draw_seed
 from betweenness import random_attack_edge_betweenness, random_attack_node_betweenness, get_max_betweenness_edge, \
-    get_max_betweenness_node, intentional_attack_edge_betweenness # intentional_attack_node_betweenness
+    get_max_betweenness_node, intentional_attack_edge_betweenness,  intentional_attack_node_betweenness
+from degree import intentional_attack_node_degree
+from coreness import intentional_attack_node_coreness
+from closeness import intentional_attack_node_closeness
+node_function_map = {
+    'max_degree' : intentional_attack_node_degree,
+    'max_betweenness' : intentional_attack_node_betweenness,
+    'max_coreness' : intentional_attack_node_coreness,
+    'max_closeness': intentional_attack_node_closeness
+}
 
-
+edge_function_map = {
+    'max_betweenness' : intentional_attack_edge_betweenness,
+}
 class Attack_base:
     def __init__(self, parent_container, graph_seed, G):
         self.parent_container = parent_container
@@ -40,6 +51,10 @@ class Attack_base:
         self.ax.set_xlim(0, 100)  # 攻击次数的范围，可以动态调整
         self.ax.set_ylim(0, len(G.nodes))  # 节点数范围是图的总节点数
         self.fig.tight_layout()
+
+        
+        self.attack_edge_num = tk.IntVar()
+        self.attack_node_num = tk.IntVar()
         
         
 
@@ -138,14 +153,18 @@ class Attack_base:
     
     def set_attack_frame(self, attack_frame):
         tk.Label(attack_frame, text="攻击边:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=(10,0), sticky="w", columnspan=2)
-        self.attack_edge_button = tk.Button(attack_frame, text="开始100次攻击", command=self.attack_edge)
-        self.attack_edge_button.grid(row=1, column=0, padx=(20,10), sticky="w", columnspan=2)
+        tk.Label(attack_frame, text="攻击次数:").grid(row=1, column=0, padx=15, pady=5, sticky="w")
+        tk.Entry(attack_frame, width=10, textvariable=self.attack_edge_num).grid(row=1, column=1, padx=10, pady=5, sticky="w")
+        self.attack_edge_button = tk.Button(attack_frame, text="开始攻击", command=self.attack_edge)
+        self.attack_edge_button.grid(row=2, column=0, padx=(20,10), columnspan=2)
 
-        tk.Label(attack_frame, text="攻击点:", font=("黑体",14)).grid(row=2, column=0, padx=10, pady=(10,0), sticky="w", columnspan=2)
-        self.attack_node_button = tk.Button(attack_frame, text="开始100次攻击", command=self.attack_node)
-        self.attack_node_button.grid(row=3, column=0, padx=(20,10), sticky="w", columnspan=2)
+        tk.Label(attack_frame, text="攻击点:", font=("黑体",14)).grid(row=3, column=0, padx=10, pady=(10,0), sticky="w", columnspan=2)
+        tk.Label(attack_frame, text="攻击次数:").grid(row=4, column=0, padx=15, pady=5, sticky="w")
+        tk.Entry(attack_frame, width=10, textvariable=self.attack_node_num).grid(row=4, column=1, padx=10, pady=5, sticky="w")
+        self.attack_node_button = tk.Button(attack_frame, text="开始攻击", command=self.attack_node)
+        self.attack_node_button.grid(row=5, column=0, padx=(20,10), columnspan=2)
 
-        tk.Button(attack_frame, text="重置", command=self.reset, width=10).grid(row=6, column=0, pady=25, padx=10, sticky="w", columnspan=2)
+        tk.Button(attack_frame, text="重置", command=self.reset, width=20).grid(row=6, column=0, pady=25, padx=10, columnspan=2)
 
 
         
@@ -153,6 +172,8 @@ class Attack_base:
         self.stop_attack = True  # 停止攻击
         print("Resetting and stopping current attack.")
 
+        self.attack_count = 0  # 攻击次数
+        self.max_subgraph_sizes = []  # 存储每次攻击后的最大子图节点数
         # 初始化折线图 Figure
         self.ax.set_xlabel("Attack Count")
         self.ax.set_ylabel("Max Subgraph Size")
@@ -215,7 +236,10 @@ class Attack_base:
         # self.disable_attack_button(0)
         # self._g, _, _ = random_attack_edge_betweenness(self._g)
         self.stop_attack = False
-        for i in range(100):
+
+        attack_num = self.attack_edge_num.get()
+
+        for i in range(attack_num):
             if self.stop_attack:  # 如果标志为True，停止攻击
                 print("Edge attack stopped.")
                 break
@@ -235,7 +259,8 @@ class Attack_base:
         # print('attack_node: ',self._g, attacked_node, attacked_betweenness)
         # self.disable_attack_button(1)
         self.stop_attack = False
-        for i in range(100):
+        attack_num = self.attack_node_num.get()
+        for i in range(attack_num):
             if self.stop_attack:  # 如果标志为True，停止攻击
                 print("Node attack stopped.")
                 break
@@ -323,34 +348,34 @@ class Attack_base:
 class Intentional_Attack(Attack_base):
     def __init__(self, parent_container, graph_seed, G):
         super().__init__(parent_container, graph_seed, G)
-        self.attack_metric = tk.StringVar()
-        self.attack_num = tk.IntVar()
+        self.attack_node_metric = tk.StringVar()
+        self.attack_edge_metric = tk.StringVar()
 
     def set_attack_frame(self, attack_frame):
         tk.Label(attack_frame, text="攻击边:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=(15,0), sticky="w", columnspan=2)
         tk.Label(attack_frame, text="选择指标:", ).grid(row=1, column=0, padx=15, pady=5, sticky="w")
-        attack_metric_spinbox = ttk.Combobox(attack_frame, textvariable=self.attack_metric, width=10)
-        attack_metric_spinbox['values'] = ['max_degree', 'max_betweenness', 'max_coreness', 'max_closeness']
-        attack_metric_spinbox.current(0)
-        attack_metric_spinbox.grid(row=1, column=1,padx=10)
+        attack_metric_edge_spinbox = ttk.Combobox(attack_frame, textvariable=self.attack_edge_metric, width=10)
+        attack_metric_edge_spinbox['values'] = ['max_betweenness']
+        # attack_metric_edge_spinbox.current(0)
+        attack_metric_edge_spinbox.grid(row=1, column=1,padx=10)
 
-        tk.Label(attack_frame, text="攻击次数:", textvariable=self.attack_num).grid(row=2, column=0, padx=15, pady=5, sticky="w")
-        tk.Entry(attack_frame, width=10).grid(row=2, column=1, padx=15, pady=5, sticky="w")
+        tk.Label(attack_frame, text="攻击次数:").grid(row=2, column=0, padx=15, pady=5, sticky="w")
+        tk.Entry(attack_frame, width=10, textvariable=self.attack_edge_num).grid(row=2, column=1, padx=15, pady=5, sticky="w")
 
         self.attack_edge_button = tk.Button(attack_frame, text="开始攻击", command=self.attack_edge)
         self.attack_edge_button.grid(row=3, column=0, padx=(20,10),pady=10, columnspan=2)
 
         tk.Label(attack_frame, text="攻击点:", font=("黑体",14)).grid(row=4, column=0, padx=10, pady=(15,0), sticky="w", columnspan=2)
         tk.Label(attack_frame, text="选择指标:", ).grid(row=5, column=0, padx=15, pady=5, sticky="w")
-        attack_metric_spinbox = ttk.Combobox(attack_frame, textvariable=self.attack_metric, width=10)
-        attack_metric_spinbox['values'] = ['max_degree', 'max_betweenness', 'max_coreness', 'max_closeness']
-        attack_metric_spinbox.current(0)
-        attack_metric_spinbox.grid(row=5, column=1,padx=10)
+        attack_metric_node_spinbox = ttk.Combobox(attack_frame, textvariable=self.attack_node_metric, width=10)
+        attack_metric_node_spinbox['values'] = ['max_degree', 'max_betweenness', 'max_coreness', 'max_closeness']
+        # attack_metric_node_spinbox.current(0)
+        attack_metric_node_spinbox.grid(row=5, column=1,padx=10)
 
-        tk.Label(attack_frame, text="攻击次数:", textvariable=self.attack_num).grid(row=6, column=0, padx=15, pady=5, sticky="w")
-        tk.Entry(attack_frame, width=10).grid(row=6, column=1, padx=10, pady=5, sticky="w")
+        tk.Label(attack_frame, text="攻击次数:").grid(row=6, column=0, padx=15, pady=5, sticky="w")
+        tk.Entry(attack_frame, width=10, textvariable=self.attack_node_num).grid(row=6, column=1, padx=10, pady=5, sticky="w")
 
-        self.attack_edge_button = tk.Button(attack_frame, text="开始攻击", command=self.attack_edge)
+        self.attack_edge_button = tk.Button(attack_frame, text="开始攻击", command=self.attack_node)
         self.attack_edge_button.grid(row=7, column=0, padx=(20,10),pady=10, columnspan=2)
 
         tk.Button(attack_frame, text="重置", command=self.reset, width=20).grid(row=8, column=0, pady=25, padx=10, columnspan=2)
@@ -362,21 +387,36 @@ class Intentional_Attack(Attack_base):
         # self._g.remove_edge(*max_edge)
         # print('attack_edge: ', self._g, max_edge, max_betweenness)
         # self.disable_attack_button(0)
-        attack_num = self.attack_num.get()
-        attack_metric = self.attack_metric.get()
-        self._g = intentional_attack_edge_betweenness(self._g)
-        for i in range(100):
-            self._g = intentional_attack_edge_betweenness(self._g)
-        self.attack_method()
+        attack_num = self.attack_edge_num.get()
+        attack_metric = self.attack_edge_metric.get()
+        self.stop_attack = False
+        for i in range(attack_num):
+            if self.stop_attack:  # 如果标志为True，停止攻击
+                print("Node attack stopped.")
+                break
+            self._g, attacked_node, _ = edge_function_map[attack_metric](self._g)
+            self.highlight_deleted_node(attacked_node)  # 高亮被删除的节点
+            self.update_max_subgraph_label()  # 更新最大子图节点数
+            self.update_line_chart()  # 更新折线图
+            self.attack_method()
+            self.parent_container.update()  # 刷新界面，动态显示
         # self.enable_attack_button()
 
     def attack_node(self):
         # self.disable_attack_button(1)
         # self._g = intentional_attack_node_betweenness(self._g)
-        max_betweenness, max_node = get_max_betweenness_node(self._g)
-        self._g = nx.Graph(self._g)
-        self._g.remove_node(max_node)
-        print('attack_node: ', self._g, max_node, max_betweenness)
-        self.attack_method()
+        attack_num = self.attack_node_num.get()
+        attack_metric = self.attack_node_metric.get()
+        self.stop_attack = False
+        for i in range(attack_num):
+            if self.stop_attack:  # 如果标志为True，停止攻击
+                print("Node attack stopped.")
+                break
+            self._g, attacked_node, _ = node_function_map[attack_metric](self._g)
+            self.highlight_deleted_node(attacked_node)  # 高亮被删除的节点
+            self.update_max_subgraph_label()  # 更新最大子图节点数
+            self.update_line_chart()  # 更新折线图
+            self.attack_method()
+            self.parent_container.update()  # 刷新界面，动态显示
         # self.enable_attack_button()
 

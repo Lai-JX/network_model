@@ -43,9 +43,16 @@ def get_max_betweenness_node(g):
 def intentional_attack_edge_betweenness(g, attacked_edge=None):
     g = nx.Graph(g)
     if attacked_edge is None:
-        _, attacked_edge = get_max_betweenness_edge(g)
+        max_betweenness, attacked_edge = get_max_betweenness_edge(g)
     g.remove_edge(*attacked_edge)
-    return g
+    return g, attacked_edge, max_betweenness
+
+def intentional_attack_node_betweenness(g, attacked_node=None):
+    g = nx.Graph(g)
+    if attacked_node is None:
+        max_betweenness, attacked_node = get_max_betweenness_node(g)
+    g.remove_node(attacked_node)
+    return g, attacked_node, max_betweenness
 
 def random_attack_edge_betweenness(g):
     random.seed(int(dt.datetime.now().timestamp() * 1000))

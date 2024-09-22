@@ -72,18 +72,24 @@ def _build_graph():
     image_label.configure(image = _image)
     image_label.image = _image      # 这步很重要，防止图片被垃圾回收
 
-    clustering_vertex_spinbox.configure(values=list(G.nodes))
-    clustering_vertex_spinbox.values = list(G.nodes)
+    # clustering_vertex_spinbox.configure(values=list(G.nodes))
+    # clustering_vertex_spinbox.values = list(G.nodes)
     degree_vertex_spinbox.configure(values=list(G.nodes))
     degree_vertex_spinbox.values = list(G.nodes)
     coreness_vertex_spinbox.configure(values=list(G.nodes))
     coreness_vertex_spinbox.values = list(G.nodes)
 
+    node_num_output.configure(text=len(G.nodes))
+    node_num_output.text = len(G.nodes)
+
+    edge_num_output.configure(text=len(G.edges))
+    edge_num_output.text = len(G.edges)
+
     diameter_output.configure(text=nx.diameter(G))
     diameter_output.text = nx.diameter(G)
 
-    clustering_avg_output.configure(text=nx.average_clustering(G))
-    clustering_avg_output.text = nx.average_clustering(G)
+    clustering_avg_output.configure(text=round(nx.average_clustering(G),4))
+    clustering_avg_output.text = round(nx.average_clustering(G),4)
 
     # print(nx.average_shortest_path_length(G))
 
@@ -91,13 +97,13 @@ def _build_graph():
     avg_path_output.text = round(nx.average_shortest_path_length(G), 4)
 
 
-def output_coefficient():
-    node = coefficient_node.get()
-    coefficient = nx.clustering(G, node)
-    # print(G)
-    # print(coefficient)
-    clustering_output.configure(text=coefficient)
-    clustering_output.text = coefficient
+# def output_coefficient():
+#     node = coefficient_node.get()
+#     coefficient = nx.clustering(G, node)
+#     # print(G)
+#     # print(coefficient)
+#     clustering_output.configure(text=coefficient)
+#     clustering_output.text = coefficient
 
 def output_degree():
     node = degree_node.get()
@@ -120,32 +126,29 @@ def output_coreness():
     coreness_output.configure(text=coreness)
     coreness_output.text=coreness
 
-def show_1core_distribution():
-    draw_k_core(G, 1, './data/1-core.png', False)
+def show_k_core_distribution(k):
+    draw_k_core(G, k, f'./data/{k}-core.png', False)
     top = Toplevel(operation3)
-    image_path = './data/1-core.png'
+    image_path = f'./data/{k}-core.png'
     image = ImageTk.PhotoImage(Image.open(image_path).resize((800,600)))     # .resize((800,400))
     image_label=Label(top, image=image)
     image_label.pack()
     mainloop()
+
+def show_1core_distribution():
+    show_k_core_distribution(1)
 
 def show_2core_distribution():
-    draw_k_core(G, 2, './data/2-core.png', False)
-    top = Toplevel(operation3)
-    image_path = './data/2-core.png'
-    image = ImageTk.PhotoImage(Image.open(image_path).resize((800,600)))     # .resize((800,400))
-    image_label=Label(top, image=image)
-    image_label.pack()
-    mainloop()
+    show_k_core_distribution(2)
 
 def show_3core_distribution():
-    draw_k_core(G, 3, './data/3-core.png', False)
-    top = Toplevel(operation3)
-    image_path = './data/3-core.png'
-    image = ImageTk.PhotoImage(Image.open(image_path).resize((800,600)))     # .resize((800,400))
-    image_label=Label(top, image=image)
-    image_label.pack()
-    mainloop()
+    show_k_core_distribution(3)
+
+def show_4core_distribution():
+    show_k_core_distribution(4)
+
+def show_5core_distribution():
+    show_k_core_distribution(5)
 
 def random_attacks_window():
     from attack import Attack_base
@@ -172,23 +175,31 @@ dataset_dropdown.grid(row=0, column=1, sticky="w", columnspan=2)
 
 tk.Button(operation1, text="画图", command=_build_graph).grid(row=0, column=3, padx=(20,0), sticky="w")
 
-tk.Label(operation1, text="直径",font=18).grid(row=1, column=0, padx=10,  pady=5)
+tk.Label(operation1, text="节点数",font=18).grid(row=1, column=0, padx=10,  pady=5)
+node_num_output = tk.Label(operation1, text=0, width=10, background='white')
+node_num_output.grid(row=1, column=1, pady=5)
+
+tk.Label(operation1, text="边数",font=18).grid(row=1, column=2, padx=10,  pady=5)
+edge_num_output = tk.Label(operation1, text=0, width=10, background='white')
+edge_num_output.grid(row=1, column=3, pady=5)
+
+tk.Label(operation1, text="直径",font=18).grid(row=2, column=0, padx=10,  pady=5)
 diameter_output = tk.Label(operation1, text=0, width=10, background='white')
-diameter_output.grid(row=1, column=1, pady=5)
+diameter_output.grid(row=2, column=1, pady=5)
 
-tk.Label(operation1, text="计算clustering coefficient:", font=("黑体",14)).grid(row=2, column=0, padx=10, pady=5, sticky="w", columnspan=4)
-tk.Label(operation1, text="选择顶点:").grid(row=3, column=0, padx=10, pady=5, sticky="w")
+tk.Label(operation1, text="计算clustering coefficient:", font=("黑体",14)).grid(row=3, column=0, padx=10, pady=5, sticky="w", columnspan=4)
+# tk.Label(operation1, text="选择顶点:").grid(row=3, column=0, padx=10, pady=5, sticky="w")
 
-clustering_vertex_spinbox = ttk.Combobox(operation1, textvariable=coefficient_node, width=10)
-# clustering_vertex_spinbox['values'] = list([1])
-# clustering_vertex_spinbox.current(0)
-clustering_vertex_spinbox.grid(row=3, column=1, pady=5, sticky="w")
-tk.Button(operation1, text="输出", command=output_coefficient).grid(row=3, column=2, sticky="w")
-clustering_output = tk.Label(operation1,width=10, text=0, background='white')
-clustering_output.grid(row=3, column=3, padx=(0,10), pady=10, sticky="w")
-tk.Button(operation1, text="平均").grid(row=4, column=2, sticky="w")
-clustering_avg_output = tk.Label(operation1,width=10, background='white')
-clustering_avg_output.grid(row=4, column=3, padx=(0,10), pady=10, sticky="w")
+# clustering_vertex_spinbox = ttk.Combobox(operation1, textvariable=coefficient_node, width=10)
+# # clustering_vertex_spinbox['values'] = list([1])
+# # clustering_vertex_spinbox.current(0)
+# clustering_vertex_spinbox.grid(row=3, column=1, pady=5, sticky="w")
+# tk.Button(operation1, text="输出", command=output_coefficient).grid(row=3, column=2, sticky="w")
+# clustering_output = tk.Label(operation1,width=10, text=0, background='white')
+# clustering_output.grid(row=3, column=3, padx=(0,10), pady=10, sticky="w")
+tk.Label(operation1, text="平均", font=18).grid(row=4, column=0,  padx=10, pady=5)
+clustering_avg_output = tk.Label(operation1,width=10, text=0, background='white')
+clustering_avg_output.grid(row=4, column=1, pady=5)
 
 ##############################################################################################
 # Degree 相关的布局
@@ -219,12 +230,16 @@ coreness_vertex_spinbox = ttk.Combobox(operation3, textvariable=coreness_node, w
 coreness_vertex_spinbox.grid(row=1, column=1, pady=5, padx=10)
 tk.Button(operation3, text="输出", command=output_coreness).grid(row=1, column=2, pady=5, padx=10)
 coreness_output = tk.Label(operation3, width=10, background='white')
-coreness_output.grid(row=1, column=3, pady=5,padx=10)
+coreness_output.grid(row=1, column=3, pady=5,padx=10,sticky="w",columnspan=2)
 
 tk.Label(operation3, text="计算图的coreness:", font=("黑体",14)).grid(row=2, column=0, padx=10, pady=5, sticky="w",columnspan=4)
-tk.Button(operation3, text="1-core", command=show_1core_distribution).grid(row=3, column=0, padx=(20,10), pady=5)
-tk.Button(operation3, text="2-core", command=show_2core_distribution).grid(row=3, column=1, padx=10,  pady=5)
-tk.Button(operation3, text="3-core", command=show_3core_distribution).grid(row=3, column=2, padx=10,  pady=5)
+core_Frame = Frame(operation3)
+core_Frame.grid(row=3, column=0,columnspan=4)
+tk.Button(core_Frame, text="1-core", command=show_1core_distribution).grid(row=0, column=0, padx=(20,10), pady=5)
+tk.Button(core_Frame, text="2-core", command=show_2core_distribution).grid(row=0, column=1, padx=10,  pady=5)
+tk.Button(core_Frame, text="3-core", command=show_3core_distribution).grid(row=0, column=2, padx=10,  pady=5)
+tk.Button(core_Frame, text="4-core", command=show_4core_distribution).grid(row=0, column=3, padx=10,  pady=5)
+tk.Button(core_Frame, text="5-core", command=show_5core_distribution).grid(row=0, column=4, padx=10,  pady=5)
 
 # 测试图的鲁棒性
 tk.Label(operation3, text="测试图的鲁棒性:").grid(row=4, column=0, padx=10, pady=5, sticky="w",columnspan=4)

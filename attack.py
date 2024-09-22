@@ -49,14 +49,16 @@ class Attack_base:
 
 
         # 创建行标题的 Treeview
-        row_headers = ttk.Treeview(show_frame, show="headings",height=4)
+        row_headers = ttk.Treeview(show_frame, show="headings",height=6)
         row_headers["columns"] = ("Row")
         row_headers.heading("Row", text="属性")
         row_headers.column("Row", width=150, anchor="center")
 
         # 添加行标题数据
+        row_headers.insert("", "end", values=("Node Num",))
+        row_headers.insert("", "end", values=("Edge Num",))
         row_headers.insert("", "end", values=("Diameter",))
-        row_headers.insert("", "end", values=("Clustering coefficient",))
+        row_headers.insert("", "end", values=("Clustering Coefficient",))
         row_headers.insert("", "end", values=("Average Path Length",))
         row_headers.insert("", "end", values=("Connected Components",))
 
@@ -64,7 +66,7 @@ class Attack_base:
         row_headers.grid(row=0, column=0, sticky="nsew")
 
         # 创建主表格
-        tree = ttk.Treeview(show_frame, columns=("before", "after"), show='headings',height=4)
+        tree = ttk.Treeview(show_frame, columns=("before", "after"), show='headings',height=6)
         self.tree = tree
         # 设置每列的标题
         tree.heading("before", text="攻击前")
@@ -75,6 +77,8 @@ class Attack_base:
         tree.column("after", width=50)
 
         # 插入一些初始数据
+        tree.insert("", "end", values=(len(self._g.nodes),len(self._g.nodes)))
+        tree.insert("", "end", values=(len(self._g.edges),len(self._g.edges)))
         tree.insert("", "end", values=(self.g_diameter,self.g_diameter))
         tree.insert("", "end", values=(self.average_clustering, self.average_clustering))
         tree.insert("", "end", values=(self.average_shortest_path_length, self.average_shortest_path_length))
@@ -91,10 +95,12 @@ class Attack_base:
     
     def set_attack_frame(self, attack_frame):
         tk.Label(attack_frame, text="攻击边:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=(10,0), sticky="w", columnspan=2)
-        tk.Button(attack_frame, text="开始100次攻击", command=self.attack_edge).grid(row=1, column=0, padx=(20,10), sticky="w", columnspan=2)
+        self.attack_edge_button = tk.Button(attack_frame, text="开始100次攻击", command=self.attack_edge)
+        self.attack_edge_button.grid(row=1, column=0, padx=(20,10), sticky="w", columnspan=2)
 
         tk.Label(attack_frame, text="攻击点:", font=("黑体",14)).grid(row=2, column=0, padx=10, pady=(10,0), sticky="w", columnspan=2)
-        tk.Button(attack_frame, text="开始100次攻击", command=self.attack_node).grid(row=3, column=0, padx=(20,10), sticky="w", columnspan=2)
+        self.attack_node_button = tk.Button(attack_frame, text="开始100次攻击", command=self.attack_node)
+        self.attack_node_button.grid(row=3, column=0, padx=(20,10), sticky="w", columnspan=2)
 
         
     def reset(self):
@@ -109,10 +115,12 @@ class Attack_base:
         self.image_label_after.configure(image = _image)
         self.image_label_after.image = _image      # 这步很重要，防止图片被垃圾回收
 
-        self.modify_data_in_table(0,1, self.g_diameter)
-        self.modify_data_in_table(1,1, self.average_clustering)
-        self.modify_data_in_table(2,1, self.average_shortest_path_length)
-        self.modify_data_in_table(3,1, self.connected_components)
+        self.modify_data_in_table(0,1, len(self.G.nodes))
+        self.modify_data_in_table(1,1, len(self.G.edges))
+        self.modify_data_in_table(2,1, self.g_diameter)
+        self.modify_data_in_table(3,1, self.average_clustering)
+        self.modify_data_in_table(4,1, self.average_shortest_path_length)
+        self.modify_data_in_table(5,1, self.connected_components)
 
 
 
@@ -120,18 +128,22 @@ class Attack_base:
     def attack_edge(self):
         # self._g, attacked_edge, attacked_betweenness = random_attack_edge_betweenness(self._g)
         # print('attack_edge', self._g, attacked_edge, attacked_betweenness)
+        # self.disable_attack_button(0)
         self._g, _, _ = random_attack_edge_betweenness(self._g)
         for i in range(100):
             self._g, _, _ = random_attack_edge_betweenness(self._g)
         self.attack_method()
+        # self.enable_attack_button()
 
     def attack_node(self):
         # self._g, attacked_node, attacked_betweenness = random_attack_node_betweenness(self._g)
         # print('attack_node: ',self._g, attacked_node, attacked_betweenness)
+        # self.disable_attack_button(1)
         self._g, _, _ = random_attack_node_betweenness(self._g)
         for i in range(100):
             self._g, _, _ = random_attack_node_betweenness(self._g)
         self.attack_method()
+        # self.enable_attack_button()
 
         
 
@@ -149,23 +161,58 @@ class Attack_base:
                 print("列索引超出范围")
         else:
             print("行索引超出范围")
+
     def attack_method(self):
         draw_graph(self._g, f'./data/network-{self.graph_seed}-after.png', False, self.pos)
 
         num = nx.number_connected_components(self._g)
         if num > 1:
             h = find_subgraph(self._g)
-            self.modify_data_in_table(0,1, nx.diameter(h))
-            self.modify_data_in_table(2,1, nx.average_shortest_path_length(h))
+            self.modify_data_in_table(2,1, nx.diameter(h))
+            self.modify_data_in_table(4,1, nx.average_shortest_path_length(h))
         else:
-            self.modify_data_in_table(0,1, nx.diameter(self._g))
-            self.modify_data_in_table(2,1, nx.average_shortest_path_length(self._g))
-        self.modify_data_in_table(1,1, nx.average_clustering(self._g))
-        self.modify_data_in_table(3,1, num)
+            self.modify_data_in_table(2,1, nx.diameter(self._g))
+            self.modify_data_in_table(4,1, nx.average_shortest_path_length(self._g))
+        self.modify_data_in_table(0,1, len(self._g.nodes))
+        self.modify_data_in_table(1,1, len(self._g.edges))
+        self.modify_data_in_table(3,1, nx.average_clustering(self._g))
+        self.modify_data_in_table(5,1, num)
 
         _image = ImageTk.PhotoImage(Image.open(f'./data/network-{self.graph_seed}-after.png').resize((600,450)))     # .resize((800,400))
         self.image_label_after.configure(image = _image)
         self.image_label_after.image = _image      # 这步很重要，防止图片被垃圾回收
+    
+    def disable_attack_button(self, type=0):
+        '''
+            type 0: edge
+            type 1: node
+        '''
+        self.attack_edge_button_text = self.attack_edge_button.cget('text')
+        self.attack_node_button_text = self.attack_node_button.cget('text')
+        if type == 0:
+            text = "正在攻击边..."
+        if type == 1:
+            text = "正在攻击点..."
+
+        self.attack_edge_button.configure(text=text, state=tk.DISABLED)
+        self.attack_edge_button.text = text
+        self.attack_edge_button.state = tk.DISABLED 
+        self.attack_node_button.configure(text=text, state=tk.DISABLED)
+        self.attack_node_button.text = text
+        self.attack_node_button.state = tk.DISABLED 
+    
+    def enable_attack_button(self):
+        '''
+            type 0: edge
+            type 1: node
+        '''
+        self.attack_edge_button.configure(text=self.attack_edge_button_text, state=tk.NORMAL)
+        self.attack_edge_button.text = self.attack_edge_button_text
+        self.attack_edge_button.state = tk.NORMAL 
+        self.attack_node_button.configure(text=self.attack_node_button_text, state=tk.NORMAL)
+        self.attack_node_button.text = self.attack_node_button_text
+        self.attack_node_button.state = tk.NORMAL 
+
 
 class Intentional_Attack(Attack_base):
     def __init__(self, parent_container, graph_seed, G):
@@ -174,26 +221,32 @@ class Intentional_Attack(Attack_base):
     def set_attack_frame(self, attack_frame):
         tk.Label(attack_frame, text="攻击边:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=(15,0), sticky="w", columnspan=2)
         tk.Label(attack_frame, text="最大betweenness:", ).grid(row=1, column=0, padx=15, pady=5, sticky="w", columnspan=2)
-        tk.Button(attack_frame, text="开始100次攻击", command=self.attack_edge).grid(row=2, column=0, padx=(20,10), sticky="w", columnspan=2)
+        self.attack_edge_button = tk.Button(attack_frame, text="开始100次攻击", command=self.attack_edge)
+        self.attack_edge_button.grid(row=2, column=0, padx=(20,10), sticky="w", columnspan=2)
 
         tk.Label(attack_frame, text="攻击点:", font=("黑体",14)).grid(row=3, column=0, padx=10, pady=(15,0), sticky="w", columnspan=2)
         tk.Label(attack_frame, text="最大betweenness:", ).grid(row=4, column=0, padx=15, pady=5, sticky="w", columnspan=2)
-        tk.Button(attack_frame, text="开始1次攻击", command=self.attack_node).grid(row=5, column=0, padx=(20,10), sticky="w", columnspan=2)
+        self.attack_node_button = tk.Button(attack_frame, text="开始1次攻击", command=self.attack_node)
+        self.attack_node_button.grid(row=5, column=0, padx=(20,10), sticky="w", columnspan=2)
 
     def attack_edge(self):
         # max_betweenness, max_edge = get_max_betweenness_edge(self._g)
         # self._g = nx.Graph(self._g)
         # self._g.remove_edge(*max_edge)
         # print('attack_edge: ', self._g, max_edge, max_betweenness)
+        # self.disable_attack_button(0)
         self._g = intentional_attack_edge_betweenness(self._g)
         for i in range(100):
             self._g = intentional_attack_edge_betweenness(self._g)
         self.attack_method()
+        # self.enable_attack_button()
 
     def attack_node(self):
+        # self.disable_attack_button(1)
         max_betweenness, max_node = get_max_betweenness_node(self._g)
         self._g = nx.Graph(self._g)
         self._g.remove_node(max_node)
         print('attack_node: ', self._g, max_node, max_betweenness)
         self.attack_method()
+        # self.enable_attack_button()
 

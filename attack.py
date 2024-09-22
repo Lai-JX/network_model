@@ -51,7 +51,7 @@ class Attack_base:
         self.ax.set_xlim(0, 100)  # 攻击次数的范围，可以动态调整
         self.ax.set_ylim(0, len(G.nodes))  # 节点数范围是图的总节点数
         self.fig.tight_layout()
-
+        self.removed_elements = []
 
         self.attack_edge_num = tk.IntVar()
         self.attack_node_num = tk.IntVar()
@@ -76,7 +76,23 @@ class Attack_base:
         self.ax.set_xlim(0, max(100, self.attack_count))  # 动态调整 x 轴范围
         self.ax.set_ylim(0, max(self.max_subgraph_sizes) + 10)  # 动态调整 y 轴范围
         self.fig.tight_layout()
+        # 更新折线图，显示当前删除的节点或边
         self.canvas.draw()  # 刷新图表
+
+    def update_removed_display(self, element):
+        """
+        更新显示已删除的节点或边
+        """
+        # 判断是边还是节点
+        if isinstance(element, tuple):
+            text = f"{element}"
+        else:
+            text = f"{element}"
+        
+        # 更新 Label 内容，将新的删除项添加到显示区域
+        new_text = text + " →"
+        self.removed_display_text.insert(tk.END, new_text)  # 在文本末尾插入文本
+        self.removed_display_text.see(tk.END)  # 滚动到最后一行
 
     def window(self):
         top = Toplevel(self.parent_container, width=800, height=900)
@@ -98,6 +114,11 @@ class Attack_base:
         # 将折线图嵌入到 Tkinter 界面中
         self.canvas = FigureCanvasTkAgg(self.fig, master=_operation)
         self.canvas.get_tk_widget().pack(side='top', padx=10, pady=10)  # 将图表放在右上角
+
+        # 在图下方创建显示删除节点或边的Label
+        self.removed_display_text = Text(_operation, height=5, width=50, wrap=tk.WORD)
+        self.removed_display_text.pack(side='top', pady=10)
+        self.removed_display_text.insert(tk.END, "Removed Nodes/Edges: ")
 
         show_frame = Frame(_operation, height= 500)
         show_frame.pack()
@@ -184,6 +205,9 @@ class Attack_base:
         self.canvas.draw()  # 刷新图表
         self.parent_container.update()  # 刷新界面，动态显示
 
+        self.removed_display_text.delete("1.0", tk.END)  # 清除之前的文本内容
+        self.removed_display_text.insert(tk.END, "Removed Nodes/Edges: ")  # 设置初始文本
+
         self._g = copy.deepcopy(self.G)
 
         self.g_diameter = round(nx.diameter(self.G),4)
@@ -208,8 +232,8 @@ class Attack_base:
         高亮被删除的节点，在图上用不同颜色展示
         """
         # 获取当前图的节点信息
-        node_colors = ['blue' if node != attacked_node else 'red' for node in self._g.nodes]
-        node_sizes = [20 if node != attacked_node else 100 for node in self._g.nodes]
+        node_colors = ['#1f78b4' if node != attacked_node else 'red' for node in self._g.nodes]
+        node_sizes = [4 if node != attacked_node else 3000 for node in self._g.nodes]
 
         # 重新绘制图，使用不同颜色高亮显示删除的节点
         draw_graph(self._g, f'./data/network-{self.graph_seed}-after.png', False, self.pos, node_color=node_colors, node_size=node_sizes)
@@ -218,17 +242,22 @@ class Attack_base:
         _image = ImageTk.PhotoImage(Image.open(f'./data/network-{self.graph_seed}-after.png').resize((600,450)))
         self.image_label_after.configure(image=_image)
         self.image_label_after.image = _image
+        # self.parent_container.update()  # 刷新界面，动态显示
 
     def highlight_deleted_edge(self, attacked_edge):
         """
         高亮被删除的边，在图上用不同颜色展示
         """
-        edge_colors = ['gray' if edge != attacked_edge else 'red' for edge in self._g.edges]
-        edge_sizes = [1 if edge != attacked_edge else 20 for edge in self._g.edges]
+        edge_colors = ['k' if edge != attacked_edge else 'red' for edge in self._g.edges]
+        edge_sizes = [1 if edge != attacked_edge else 3 for edge in self._g.edges]
+
         draw_graph(self._g, f'./data/network-{self.graph_seed}-after.png', False, self.pos, edge_color=edge_colors, edge_size=edge_sizes)
         _image = ImageTk.PhotoImage(Image.open(f'./data/network-{self.graph_seed}-after.png').resize((600,450)))
         self.image_label_after.configure(image=_image)
         self.image_label_after.image = _image
+        # self.parent_container.update()  # 刷新界面，动态显示
+
+
 
     def attack_edge(self):
         # self._g, attacked_edge, attacked_betweenness = random_attack_edge_betweenness(self._g)
@@ -244,6 +273,8 @@ class Attack_base:
                 print("Edge attack stopped.")
                 break
             self._g, attacked_edge, _ = random_attack_edge_betweenness(self._g)
+            self.removed_elements.append(attacked_edge)
+            self.update_removed_display(attacked_edge)  # 更新显示删除的节点
             self.highlight_deleted_edge(attacked_edge)  # 高亮被删除的边
             self.update_max_subgraph_label()  # 更新最大子图节点数
             self.update_line_chart()  # 更新折线图
@@ -265,6 +296,8 @@ class Attack_base:
                 print("Node attack stopped.")
                 break
             self._g, attacked_node, _ = random_attack_node_betweenness(self._g)
+            self.removed_elements.append(attacked_node)
+            self.update_removed_display(attacked_node)  # 更新显示删除的节点
             self.highlight_deleted_node(attacked_node)  # 高亮被删除的节点
             self.update_max_subgraph_label()  # 更新最大子图节点数
             self.update_line_chart()  # 更新折线图
@@ -394,8 +427,10 @@ class Intentional_Attack(Attack_base):
             if self.stop_attack:  # 如果标志为True，停止攻击
                 print("Node attack stopped.")
                 break
-            self._g, attacked_node, _ = edge_function_map[attack_metric](self._g)
-            self.highlight_deleted_node(attacked_node)  # 高亮被删除的节点
+            self._g, attacked_edge, _ = edge_function_map[attack_metric](self._g)
+            self.removed_elements.append(attacked_edge)
+            self.update_removed_display(attacked_edge)  # 更新显示删除的节点
+            self.highlight_deleted_node(attacked_edge)  # 高亮被删除的节点
             self.update_max_subgraph_label()  # 更新最大子图节点数
             self.update_line_chart()  # 更新折线图
             self.attack_method()
@@ -413,6 +448,8 @@ class Intentional_Attack(Attack_base):
                 print("Node attack stopped.")
                 break
             self._g, attacked_node, _ = node_function_map[attack_metric](self._g)
+            self.removed_elements.append(attacked_node)
+            self.update_removed_display(attacked_node)  # 更新显示删除的节点
             self.highlight_deleted_node(attacked_node)  # 高亮被删除的节点
             self.update_max_subgraph_label()  # 更新最大子图节点数
             self.update_line_chart()  # 更新折线图

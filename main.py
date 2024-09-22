@@ -107,12 +107,17 @@ def build_graph(data_path, num_nodes=2000, seed=2024):
 #         plt.savefig(save_path)
 #     if is_show:
 #         plt.show()
-def draw_graph(g, save_path=None, is_show=True, pos=None, node_color=None, edge_color=None, node_size=None, edge_size=None):
+def draw_graph(g, save_path=None, is_show=True, pos=None, show_labels =True, node_color=None, edge_color=None, node_size=None, edge_size=None):
     fig, ax = plt.subplots(figsize=(12, 9))
     if pos is None:
         pos = nx.spring_layout(g, seed=draw_seed,k=0.15)
     nx.draw_networkx_nodes(g, pos, ax=ax,  node_color=node_color, node_size=node_size)  # node_size=20,
     nx.draw_networkx_edges(g, pos, ax=ax, alpha=0.4, edge_color=edge_color, width=edge_size)
+
+    # 显示节点编号（标签）
+    if show_labels:
+        nx.draw_networkx_labels(g, pos, ax=ax, font_size=12, font_color="black")  # 添加这行显示节点编号
+
     ax.set_title("Graph", fontsize=24)
     ax.set_axis_off()
     fig.tight_layout()
@@ -199,6 +204,26 @@ def draw_betweenness_centrality(G):
     fig.tight_layout()
     plt.axis("off")
     plt.show()
+
+def reindex_graph(G):
+    # 创建一个示例图
+
+    # 获取原始节点列表
+    original_nodes = list(G.nodes())
+
+    # 创建一个新的图
+    new_G = nx.Graph()
+
+    # 创建节点映射
+    node_mapping = {original_nodes[i]: i for i in range(len(original_nodes))}
+
+    # 重新添加节点到新图中
+    new_G.add_nodes_from(node_mapping.values())
+
+    # 重新添加边
+    for u, v in G.edges():
+        new_G.add_edge(node_mapping[u], node_mapping[v])
+    return new_G
 
 
 

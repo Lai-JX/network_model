@@ -4,11 +4,11 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 import networkx as nx
-from anyio import value
+# from anyio import value
 
 # import main
 
-from main import build_graph, find_subgraph, draw_graph, draw_seed
+from main import build_graph, find_subgraph, draw_graph, reindex_graph, draw_seed
 from degree import draw_degree_rank
 from betweenness import random_attack_edge_betweenness
 from coreness import draw_k_core
@@ -22,7 +22,7 @@ root.geometry("1200x800+200+100")
 # root.resizable(False, False)
 
 # graph
-image_path = './data/network.png'
+image_path = './data/blank-graph.png'
 image = ImageTk.PhotoImage(Image.open(image_path).resize((1200,600)))     # .resize((800,400))
 image_label=Label(root, image=image)
 image_label.pack()
@@ -68,6 +68,8 @@ def _build_graph():
     G = find_subgraph(G)
     print("after: ",G)
 
+    G = reindex_graph(G)
+
     draw_graph(G, f'./data/network-{seed}.png', False)
     _image = ImageTk.PhotoImage(Image.open(f'./data/network-{seed}.png').resize((1200,600)))     # .resize((800,400))
 
@@ -89,6 +91,15 @@ def _build_graph():
 
     diameter_output.configure(text=nx.diameter(G))
     diameter_output.text = nx.diameter(G)
+
+    # 获取所有节点的度数
+    degrees = dict(G.degree())  # 返回一个字典，键为节点，值为对应的度数
+
+    # 计算平均度数
+    average_degree = sum(degrees.values()) / len(degrees)
+
+    avg_degree_output.configure(text=round(average_degree,4))
+    avg_degree_output.text = round(average_degree,4)
 
     clustering_avg_output.configure(text=round(nx.average_clustering(G),4))
     clustering_avg_output.text = round(nx.average_clustering(G),4)
@@ -214,7 +225,10 @@ degree_vertex_spinbox.grid(row=1, column=1,padx=10)
 tk.Button(operation2, text="输出",command=output_degree).grid(row=1, column=2,padx=10)
 degree_output = tk.Label(operation2, width=10, background='white')
 degree_output.grid(row=1, column=3, padx=10, )
-tk.Button(operation2, text="显示度的分布", command=show_degree_distribution).grid(row=2, column=0, padx=10, pady=5, columnspan=4)
+tk.Label(operation2, text="平均Degree:").grid(row=2, column=0, padx=10, pady=5, sticky="w",)
+avg_degree_output = tk.Label(operation2, text=0,width=10, background='white')
+avg_degree_output.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+tk.Button(operation2, text="显示度的分布", command=show_degree_distribution).grid(row=2, column=2, padx=10, pady=5, columnspan=2)
 
 # 计算平均最短路径
 tk.Label(operation2, text="计算平均最短路径:", font=("黑体",14)).grid(row=3, column=0, padx=10, pady=5, sticky="w", columnspan=4)

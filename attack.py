@@ -90,9 +90,9 @@ class Attack_base:
         self.set_attack_frame(attack_frame)
         tk.Button(attack_frame, text="重置", command=self.reset, width=10).grid(row=6, column=0, pady=25, padx=10, sticky="w", columnspan=2)
 
-        
+
         mainloop()
-    
+
     def set_attack_frame(self, attack_frame):
         tk.Label(attack_frame, text="攻击边:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=(10,0), sticky="w", columnspan=2)
         self.attack_edge_button = tk.Button(attack_frame, text="开始100次攻击", command=self.attack_edge)
@@ -102,7 +102,7 @@ class Attack_base:
         self.attack_node_button = tk.Button(attack_frame, text="开始100次攻击", command=self.attack_node)
         self.attack_node_button.grid(row=3, column=0, padx=(20,10), sticky="w", columnspan=2)
 
-        
+
     def reset(self):
         self._g = copy.deepcopy(self.G)
 
@@ -145,15 +145,15 @@ class Attack_base:
         self.attack_method()
         # self.enable_attack_button()
 
-        
+
 
     def modify_data_in_table(self, row_index, col_index, new_value):
         items = self.tree.get_children()
-        
+
         if row_index < len(items):
             item_id = items[row_index]
             current_values = list(self.tree.item(item_id, "values"))
-            
+
             if col_index < len(current_values):
                 current_values[col_index] = round(new_value,4) if not isinstance(new_value, str) else new_value
                 self.tree.item(item_id, values=current_values)
@@ -181,7 +181,7 @@ class Attack_base:
         _image = ImageTk.PhotoImage(Image.open(f'./data/network-{self.graph_seed}-after.png').resize((600,450)))     # .resize((800,400))
         self.image_label_after.configure(image = _image)
         self.image_label_after.image = _image      # 这步很重要，防止图片被垃圾回收
-    
+
     def disable_attack_button(self, type=0):
         '''
             type 0: edge
@@ -196,11 +196,11 @@ class Attack_base:
 
         self.attack_edge_button.configure(text=text, state=tk.DISABLED)
         self.attack_edge_button.text = text
-        self.attack_edge_button.state = tk.DISABLED 
+        self.attack_edge_button.state = tk.DISABLED
         self.attack_node_button.configure(text=text, state=tk.DISABLED)
         self.attack_node_button.text = text
-        self.attack_node_button.state = tk.DISABLED 
-    
+        self.attack_node_button.state = tk.DISABLED
+
     def enable_attack_button(self):
         '''
             type 0: edge
@@ -208,10 +208,10 @@ class Attack_base:
         '''
         self.attack_edge_button.configure(text=self.attack_edge_button_text, state=tk.NORMAL)
         self.attack_edge_button.text = self.attack_edge_button_text
-        self.attack_edge_button.state = tk.NORMAL 
+        self.attack_edge_button.state = tk.NORMAL
         self.attack_node_button.configure(text=self.attack_node_button_text, state=tk.NORMAL)
         self.attack_node_button.text = self.attack_node_button_text
-        self.attack_node_button.state = tk.NORMAL 
+        self.attack_node_button.state = tk.NORMAL
 
 
 class Intentional_Attack(Attack_base):
@@ -243,7 +243,7 @@ class Intentional_Attack(Attack_base):
 
     def attack_node(self):
         # self.disable_attack_button(1)
-        max_betweenness, max_node = get_max_betweenness_node(self._g)
+        max_node, max_betweenness  = get_max_betweenness_node(self._g)
         self._g = nx.Graph(self._g)
         self._g.remove_node(max_node)
         print('attack_node: ', self._g, max_node, max_betweenness)

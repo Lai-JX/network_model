@@ -40,7 +40,7 @@ def draw_degree_rank(g, save_path=None, is_show=True):
 
 def get_max_degree_node(g):
     node_degree = dict(g.degree())
-    max_degree = 0
+    max_degree = -1
     max_node = None
     for n, d in node_degree.items():
         if d > max_degree:

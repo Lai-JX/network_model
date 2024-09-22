@@ -63,11 +63,17 @@ draw_closeness_distribution(g)
 print('average closeness:', np.average(list(nx.closeness_centrality(g).values())))
 
 
-# edge betweenness
+# edge and node betweenness
 from betweenness import draw_edge_betweenness_distribution, get_max_betweenness_edge, \
-    intentional_attack_edge_betweenness, random_attack_edge_betweenness
+    intentional_attack_edge_betweenness, random_attack_edge_betweenness, draw_node_betweenness_distribution
+
+print('average edge betweenness:', np.average(list(nx.edge_betweenness_centrality(g).values())))
+print('average node betweenness:', np.average(list(nx.betweenness_centrality(g).values())))
 
 draw_edge_betweenness_distribution(g)
+draw_node_betweenness_distribution(g)
+
+
 max_betweenness, max_edge = get_max_betweenness_edge(g)
 print('max betweenness:', max_betweenness)
 print('max edge:', max_edge)

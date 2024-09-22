@@ -15,7 +15,7 @@ def draw_closeness_distribution(g):
 
 def get_max_closeness_node(g):
     node_closeness = nx.closeness_centrality(g)
-    max_closeness = 0
+    max_closeness = -1
     max_node = None
     for n, c in node_closeness.items():
         if c > max_closeness:

@@ -5,29 +5,54 @@ random.seed(2024)
 
 draw_seed = 2024
 
-
-def build_graph(data_path, num_sample=10000, seed=2024,):
+def build_graph(data_path, num_nodes=2000, seed=2024):
     G = nx.Graph()
 
     # 读取txt文件
     with open(data_path, 'r') as f:
         lines = f.readlines()
-    if num_sample is None:
-        edges = lines[1:]
-    else:
-        print('seed:',seed)
-        random.seed(seed)
-        edges = random.sample(lines[1:], num_sample)
+
+    edges = lines[1:]
 
     # 创建节点列表并找出唯一的节点ID
     nodes = set()
     for line in edges:
-    # for line in lines[1:]:
         from_node, to_node = line.strip().split(",")
         nodes.add(from_node)
         nodes.add(to_node)
         G.add_edge(from_node, to_node)
+
+    print('seed:',seed)
+    random.seed(seed)
+
+    for i in range(37700 - num_nodes):
+        removed_node = random.sample(list(G.nodes), 1)[0]
+        G.remove_node(removed_node)
+
     return G, nodes
+
+# def build_graph(data_path, num_sample=10000, seed=2024,):
+#     G = nx.Graph()
+#
+#     # 读取txt文件
+#     with open(data_path, 'r') as f:
+#         lines = f.readlines()
+#     if num_sample is None:
+#         edges = lines[1:]
+#     else:
+#         print('seed:',seed)
+#         random.seed(seed)
+#         edges = random.sample(lines[1:], num_sample)
+#
+#     # 创建节点列表并找出唯一的节点ID
+#     nodes = set()
+#     for line in edges:
+#     # for line in lines[1:]:
+#         from_node, to_node = line.strip().split(",")
+#         nodes.add(from_node)
+#         nodes.add(to_node)
+#         G.add_edge(from_node, to_node)
+#     return G, nodes
 
 # def draw_graph(G, save_path=None, is_show=True):
 #     '''

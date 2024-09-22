@@ -6,7 +6,9 @@ from tkinter import *
 from tkinter import ttk
 from PIL import Image, ImageTk
 from main import build_graph, find_subgraph, draw_graph, draw_seed
-from betweenness import random_attack_edge_betweenness, random_attack_node_betweenness, get_max_betweenness_edge,get_max_betweenness_node
+from betweenness import random_attack_edge_betweenness, random_attack_node_betweenness, get_max_betweenness_edge, \
+    get_max_betweenness_node, intentional_attack_edge_betweenness
+
 
 class Attack_base:
     def __init__(self, parent_container, graph_seed, G):
@@ -89,10 +91,10 @@ class Attack_base:
     
     def set_attack_frame(self, attack_frame):
         tk.Label(attack_frame, text="攻击边:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=(10,0), sticky="w", columnspan=2)
-        tk.Button(attack_frame, text="开始一次攻击", command=self.attack_edge).grid(row=1, column=0, padx=(20,10), sticky="w", columnspan=2)
+        tk.Button(attack_frame, text="开始100次攻击", command=self.attack_edge).grid(row=1, column=0, padx=(20,10), sticky="w", columnspan=2)
 
         tk.Label(attack_frame, text="攻击点:", font=("黑体",14)).grid(row=2, column=0, padx=10, pady=(10,0), sticky="w", columnspan=2)
-        tk.Button(attack_frame, text="开始一次攻击", command=self.attack_node).grid(row=3, column=0, padx=(20,10), sticky="w", columnspan=2)
+        tk.Button(attack_frame, text="开始100次攻击", command=self.attack_node).grid(row=3, column=0, padx=(20,10), sticky="w", columnspan=2)
 
         
     def reset(self):
@@ -116,13 +118,19 @@ class Attack_base:
 
 
     def attack_edge(self):
-        self._g, attacked_edge, attacked_betweenness = random_attack_edge_betweenness(self._g)
-        print('attack_edge: ', self._g, attacked_edge, attacked_betweenness)
+        # self._g, attacked_edge, attacked_betweenness = random_attack_edge_betweenness(self._g)
+        # print('attack_edge', self._g, attacked_edge, attacked_betweenness)
+        self._g, _, _ = random_attack_edge_betweenness(self._g)
+        for i in range(100):
+            self._g, _, _ = random_attack_edge_betweenness(self._g)
         self.attack_method()
 
     def attack_node(self):
-        self._g, attacked_node, attacked_betweenness = random_attack_node_betweenness(self._g)
-        print('attack_node: ',self._g, attacked_node, attacked_betweenness)
+        # self._g, attacked_node, attacked_betweenness = random_attack_node_betweenness(self._g)
+        # print('attack_node: ',self._g, attacked_node, attacked_betweenness)
+        self._g, _, _ = random_attack_node_betweenness(self._g)
+        for i in range(100):
+            self._g, _, _ = random_attack_node_betweenness(self._g)
         self.attack_method()
 
         
@@ -162,21 +170,24 @@ class Attack_base:
 class Intentional_Attack(Attack_base):
     def __init__(self, parent_container, graph_seed, G):
         super().__init__(parent_container, graph_seed, G)
-    
+
     def set_attack_frame(self, attack_frame):
         tk.Label(attack_frame, text="攻击边:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=(15,0), sticky="w", columnspan=2)
         tk.Label(attack_frame, text="最大betweenness:", ).grid(row=1, column=0, padx=15, pady=5, sticky="w", columnspan=2)
-        tk.Button(attack_frame, text="开始一次攻击", command=self.attack_edge).grid(row=2, column=0, padx=(20,10), sticky="w", columnspan=2)
+        tk.Button(attack_frame, text="开始100次攻击", command=self.attack_edge).grid(row=2, column=0, padx=(20,10), sticky="w", columnspan=2)
 
         tk.Label(attack_frame, text="攻击点:", font=("黑体",14)).grid(row=3, column=0, padx=10, pady=(15,0), sticky="w", columnspan=2)
         tk.Label(attack_frame, text="最大betweenness:", ).grid(row=4, column=0, padx=15, pady=5, sticky="w", columnspan=2)
-        tk.Button(attack_frame, text="开始一次攻击", command=self.attack_node).grid(row=5, column=0, padx=(20,10), sticky="w", columnspan=2)
+        tk.Button(attack_frame, text="开始1次攻击", command=self.attack_node).grid(row=5, column=0, padx=(20,10), sticky="w", columnspan=2)
 
     def attack_edge(self):
-        max_betweenness, max_edge = get_max_betweenness_edge(self._g)
-        self._g = nx.Graph(self._g)
-        self._g.remove_edge(*max_edge)
-        print('attack_edge: ', self._g, max_edge, max_betweenness)
+        # max_betweenness, max_edge = get_max_betweenness_edge(self._g)
+        # self._g = nx.Graph(self._g)
+        # self._g.remove_edge(*max_edge)
+        # print('attack_edge: ', self._g, max_edge, max_betweenness)
+        self._g = intentional_attack_edge_betweenness(self._g)
+        for i in range(100):
+            self._g = intentional_attack_edge_betweenness(self._g)
         self.attack_method()
 
     def attack_node(self):

@@ -5,17 +5,30 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from PIL import Image, ImageTk
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from main import build_graph, find_subgraph, draw_graph, draw_seed
 from betweenness import random_attack_edge_betweenness, random_attack_node_betweenness, get_max_betweenness_edge, \
-    get_max_betweenness_node, intentional_attack_edge_betweenness
+    get_max_betweenness_node, intentional_attack_edge_betweenness,  intentional_attack_node_betweenness
+from degree import intentional_attack_node_degree
+from coreness import intentional_attack_node_coreness
+from closeness import intentional_attack_node_closeness
+node_function_map = {
+    'max_degree' : intentional_attack_node_degree,
+    'max_betweenness' : intentional_attack_node_betweenness,
+    'max_coreness' : intentional_attack_node_coreness,
+    'max_closeness': intentional_attack_node_closeness
+}
 
-
+edge_function_map = {
+    'max_betweenness' : intentional_attack_edge_betweenness,
+}
 class Attack_base:
     def __init__(self, parent_container, graph_seed, G):
         self.parent_container = parent_container
         self.graph_seed = graph_seed
         self.draw_seed = draw_seed
-        self.pos = nx.spring_layout(G, seed=draw_seed)
+        self.pos = nx.spring_layout(G, seed=draw_seed, k=0.15)
         self.G = copy.deepcopy(G)
         self._g = copy.deepcopy(G)
 
@@ -23,6 +36,47 @@ class Attack_base:
         self.average_clustering = round(nx.average_clustering(G),4)
         self.average_shortest_path_length = round(nx.average_shortest_path_length(G),4)
         self.connected_components = round(nx.number_connected_components(G),4)
+
+        # 用于控制攻击的标志
+        self.stop_attack = False
+        # 初始化折线图数据
+        self.attack_count = 0  # 攻击次数
+        self.max_subgraph_sizes = []  # 存储每次攻击后的最大子图节点数
+
+        # 初始化折线图 Figure
+        self.fig, self.ax = plt.subplots(figsize=(4, 3))
+        self.ax.set_xlabel("Attack Count")
+        self.ax.set_ylabel("Max Subgraph Size")
+        self.line, = self.ax.plot([], [], 'r-')  # 初始化折线图的线
+        self.ax.set_xlim(0, 100)  # 攻击次数的范围，可以动态调整
+        self.ax.set_ylim(0, len(G.nodes))  # 节点数范围是图的总节点数
+        self.fig.tight_layout()
+
+
+        self.attack_edge_num = tk.IntVar()
+        self.attack_node_num = tk.IntVar()
+
+
+
+    def update_max_subgraph_label(self):
+        """
+        计算并更新最大连通子图的节点数，更新右上角的折线图数据
+        """
+        max_subgraph = max(nx.connected_components(self._g), key=len)  # 找到节点最多的子图
+        max_subgraph_size = len(max_subgraph)  # 计算最大子图的节点数
+        self.max_subgraph_sizes.append(max_subgraph_size)  # 保存最大子图的节点数
+        self.attack_count += 1  # 增加攻击次数
+
+    def update_line_chart(self):
+        """
+        更新右上角的折线图，动态显示最大子图节点数
+        """
+        # 更新折线图数据
+        self.line.set_data(range(self.attack_count), self.max_subgraph_sizes)
+        self.ax.set_xlim(0, max(100, self.attack_count))  # 动态调整 x 轴范围
+        self.ax.set_ylim(0, max(self.max_subgraph_sizes) + 10)  # 动态调整 y 轴范围
+        self.fig.tight_layout()
+        self.canvas.draw()  # 刷新图表
 
     def window(self):
         top = Toplevel(self.parent_container, width=800, height=900)
@@ -41,8 +95,13 @@ class Attack_base:
         self.image_label_after=Label(graph, image=image_after)
         self.image_label_after.pack()
 
+        # 将折线图嵌入到 Tkinter 界面中
+        self.canvas = FigureCanvasTkAgg(self.fig, master=_operation)
+        self.canvas.get_tk_widget().pack(side='top', padx=10, pady=10)  # 将图表放在右上角
+
         show_frame = Frame(_operation, height= 500)
         show_frame.pack()
+
 
         attack_frame = Frame(_operation)
         attack_frame.pack(expand=True)
@@ -88,22 +147,43 @@ class Attack_base:
         tree.grid(row=0, column=1, sticky="nsew")
 
         self.set_attack_frame(attack_frame)
-        tk.Button(attack_frame, text="重置", command=self.reset, width=10).grid(row=6, column=0, pady=25, padx=10, sticky="w", columnspan=2)
 
-
+        
         mainloop()
-
+    
     def set_attack_frame(self, attack_frame):
         tk.Label(attack_frame, text="攻击边:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=(10,0), sticky="w", columnspan=2)
-        self.attack_edge_button = tk.Button(attack_frame, text="开始100次攻击", command=self.attack_edge)
-        self.attack_edge_button.grid(row=1, column=0, padx=(20,10), sticky="w", columnspan=2)
+        tk.Label(attack_frame, text="攻击次数:").grid(row=1, column=0, padx=15, pady=5, sticky="w")
+        tk.Entry(attack_frame, width=10, textvariable=self.attack_edge_num).grid(row=1, column=1, padx=10, pady=5, sticky="w")
+        self.attack_edge_button = tk.Button(attack_frame, text="开始攻击", command=self.attack_edge)
+        self.attack_edge_button.grid(row=2, column=0, padx=(20,10), columnspan=2)
 
-        tk.Label(attack_frame, text="攻击点:", font=("黑体",14)).grid(row=2, column=0, padx=10, pady=(10,0), sticky="w", columnspan=2)
-        self.attack_node_button = tk.Button(attack_frame, text="开始100次攻击", command=self.attack_node)
-        self.attack_node_button.grid(row=3, column=0, padx=(20,10), sticky="w", columnspan=2)
+        tk.Label(attack_frame, text="攻击点:", font=("黑体",14)).grid(row=3, column=0, padx=10, pady=(10,0), sticky="w", columnspan=2)
+        tk.Label(attack_frame, text="攻击次数:").grid(row=4, column=0, padx=15, pady=5, sticky="w")
+        tk.Entry(attack_frame, width=10, textvariable=self.attack_node_num).grid(row=4, column=1, padx=10, pady=5, sticky="w")
+        self.attack_node_button = tk.Button(attack_frame, text="开始攻击", command=self.attack_node)
+        self.attack_node_button.grid(row=5, column=0, padx=(20,10), columnspan=2)
+
+        tk.Button(attack_frame, text="重置", command=self.reset, width=20).grid(row=6, column=0, pady=25, padx=10, columnspan=2)
 
 
+        
     def reset(self):
+        self.stop_attack = True  # 停止攻击
+        print("Resetting and stopping current attack.")
+
+        self.attack_count = 0  # 攻击次数
+        self.max_subgraph_sizes = []  # 存储每次攻击后的最大子图节点数
+        # 初始化折线图 Figure
+        self.ax.set_xlabel("Attack Count")
+        self.ax.set_ylabel("Max Subgraph Size")
+        self.line.set_data([],[]) # 初始化折线图的线
+        self.ax.set_xlim(0, 100)  # 攻击次数的范围，可以动态调整
+        self.ax.set_ylim(0, len(self.G.nodes))  # 节点数范围是图的总节点数
+        self.fig.tight_layout()
+        self.canvas.draw()  # 刷新图表
+        self.parent_container.update()  # 刷新界面，动态显示
+
         self._g = copy.deepcopy(self.G)
 
         self.g_diameter = round(nx.diameter(self.G),4)
@@ -123,37 +203,88 @@ class Attack_base:
         self.modify_data_in_table(5,1, self.connected_components)
 
 
+    def highlight_deleted_node(self, attacked_node):
+        """
+        高亮被删除的节点，在图上用不同颜色展示
+        """
+        # 获取当前图的节点信息
+        node_colors = ['blue' if node != attacked_node else 'red' for node in self._g.nodes]
+        node_sizes = [20 if node != attacked_node else 100 for node in self._g.nodes]
 
+        # 重新绘制图，使用不同颜色高亮显示删除的节点
+        draw_graph(self._g, f'./data/network-{self.graph_seed}-after.png', False, self.pos, node_color=node_colors, node_size=node_sizes)
+
+        # 更新界面图片
+        _image = ImageTk.PhotoImage(Image.open(f'./data/network-{self.graph_seed}-after.png').resize((600,450)))
+        self.image_label_after.configure(image=_image)
+        self.image_label_after.image = _image
+
+    def highlight_deleted_edge(self, attacked_edge):
+        """
+        高亮被删除的边，在图上用不同颜色展示
+        """
+        edge_colors = ['gray' if edge != attacked_edge else 'red' for edge in self._g.edges]
+        edge_sizes = [1 if edge != attacked_edge else 20 for edge in self._g.edges]
+        draw_graph(self._g, f'./data/network-{self.graph_seed}-after.png', False, self.pos, edge_color=edge_colors, edge_size=edge_sizes)
+        _image = ImageTk.PhotoImage(Image.open(f'./data/network-{self.graph_seed}-after.png').resize((600,450)))
+        self.image_label_after.configure(image=_image)
+        self.image_label_after.image = _image
 
     def attack_edge(self):
         # self._g, attacked_edge, attacked_betweenness = random_attack_edge_betweenness(self._g)
         # print('attack_edge', self._g, attacked_edge, attacked_betweenness)
         # self.disable_attack_button(0)
-        self._g, _, _ = random_attack_edge_betweenness(self._g)
-        for i in range(100):
-            self._g, _, _ = random_attack_edge_betweenness(self._g)
-        self.attack_method()
+        # self._g, _, _ = random_attack_edge_betweenness(self._g)
+        self.stop_attack = False
+
+        attack_num = self.attack_edge_num.get()
+
+        for i in range(attack_num):
+            if self.stop_attack:  # 如果标志为True，停止攻击
+                print("Edge attack stopped.")
+                break
+            self._g, attacked_edge, _ = random_attack_edge_betweenness(self._g)
+            self.highlight_deleted_edge(attacked_edge)  # 高亮被删除的边
+            self.update_max_subgraph_label()  # 更新最大子图节点数
+            self.update_line_chart()  # 更新折线图
+            self.attack_method()
+            self.parent_container.update()  # 刷新界面，动态显示
+        # for i in range(100):
+        #     self._g, _, _ = random_attack_edge_betweenness(self._g)
+        # self.attack_method()
         # self.enable_attack_button()
 
     def attack_node(self):
         # self._g, attacked_node, attacked_betweenness = random_attack_node_betweenness(self._g)
         # print('attack_node: ',self._g, attacked_node, attacked_betweenness)
         # self.disable_attack_button(1)
-        self._g, _, _ = random_attack_node_betweenness(self._g)
-        for i in range(100):
-            self._g, _, _ = random_attack_node_betweenness(self._g)
-        self.attack_method()
+        self.stop_attack = False
+        attack_num = self.attack_node_num.get()
+        for i in range(attack_num):
+            if self.stop_attack:  # 如果标志为True，停止攻击
+                print("Node attack stopped.")
+                break
+            self._g, attacked_node, _ = random_attack_node_betweenness(self._g)
+            self.highlight_deleted_node(attacked_node)  # 高亮被删除的节点
+            self.update_max_subgraph_label()  # 更新最大子图节点数
+            self.update_line_chart()  # 更新折线图
+            self.attack_method()
+            self.parent_container.update()  # 刷新界面，动态显示
+        # self._g, _, _ = random_attack_node_betweenness(self._g)
+        # for i in range(100):
+        #     self._g, _, _ = random_attack_node_betweenness(self._g)
+        # self.attack_method()
         # self.enable_attack_button()
 
-
+        
 
     def modify_data_in_table(self, row_index, col_index, new_value):
         items = self.tree.get_children()
-
+        
         if row_index < len(items):
             item_id = items[row_index]
             current_values = list(self.tree.item(item_id, "values"))
-
+            
             if col_index < len(current_values):
                 current_values[col_index] = round(new_value,4) if not isinstance(new_value, str) else new_value
                 self.tree.item(item_id, values=current_values)
@@ -181,7 +312,7 @@ class Attack_base:
         _image = ImageTk.PhotoImage(Image.open(f'./data/network-{self.graph_seed}-after.png').resize((600,450)))     # .resize((800,400))
         self.image_label_after.configure(image = _image)
         self.image_label_after.image = _image      # 这步很重要，防止图片被垃圾回收
-
+    
     def disable_attack_button(self, type=0):
         '''
             type 0: edge
@@ -196,11 +327,11 @@ class Attack_base:
 
         self.attack_edge_button.configure(text=text, state=tk.DISABLED)
         self.attack_edge_button.text = text
-        self.attack_edge_button.state = tk.DISABLED
+        self.attack_edge_button.state = tk.DISABLED 
         self.attack_node_button.configure(text=text, state=tk.DISABLED)
         self.attack_node_button.text = text
-        self.attack_node_button.state = tk.DISABLED
-
+        self.attack_node_button.state = tk.DISABLED 
+    
     def enable_attack_button(self):
         '''
             type 0: edge
@@ -208,26 +339,47 @@ class Attack_base:
         '''
         self.attack_edge_button.configure(text=self.attack_edge_button_text, state=tk.NORMAL)
         self.attack_edge_button.text = self.attack_edge_button_text
-        self.attack_edge_button.state = tk.NORMAL
+        self.attack_edge_button.state = tk.NORMAL 
         self.attack_node_button.configure(text=self.attack_node_button_text, state=tk.NORMAL)
         self.attack_node_button.text = self.attack_node_button_text
-        self.attack_node_button.state = tk.NORMAL
+        self.attack_node_button.state = tk.NORMAL 
 
 
 class Intentional_Attack(Attack_base):
     def __init__(self, parent_container, graph_seed, G):
         super().__init__(parent_container, graph_seed, G)
+        self.attack_node_metric = tk.StringVar()
+        self.attack_edge_metric = tk.StringVar()
 
     def set_attack_frame(self, attack_frame):
         tk.Label(attack_frame, text="攻击边:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=(15,0), sticky="w", columnspan=2)
-        tk.Label(attack_frame, text="最大betweenness:", ).grid(row=1, column=0, padx=15, pady=5, sticky="w", columnspan=2)
-        self.attack_edge_button = tk.Button(attack_frame, text="开始100次攻击", command=self.attack_edge)
-        self.attack_edge_button.grid(row=2, column=0, padx=(20,10), sticky="w", columnspan=2)
+        tk.Label(attack_frame, text="选择指标:", ).grid(row=1, column=0, padx=15, pady=5, sticky="w")
+        attack_metric_edge_spinbox = ttk.Combobox(attack_frame, textvariable=self.attack_edge_metric, width=10)
+        attack_metric_edge_spinbox['values'] = ['max_betweenness']
+        # attack_metric_edge_spinbox.current(0)
+        attack_metric_edge_spinbox.grid(row=1, column=1,padx=10)
 
-        tk.Label(attack_frame, text="攻击点:", font=("黑体",14)).grid(row=3, column=0, padx=10, pady=(15,0), sticky="w", columnspan=2)
-        tk.Label(attack_frame, text="最大betweenness:", ).grid(row=4, column=0, padx=15, pady=5, sticky="w", columnspan=2)
-        self.attack_node_button = tk.Button(attack_frame, text="开始1次攻击", command=self.attack_node)
-        self.attack_node_button.grid(row=5, column=0, padx=(20,10), sticky="w", columnspan=2)
+        tk.Label(attack_frame, text="攻击次数:").grid(row=2, column=0, padx=15, pady=5, sticky="w")
+        tk.Entry(attack_frame, width=10, textvariable=self.attack_edge_num).grid(row=2, column=1, padx=15, pady=5, sticky="w")
+
+        self.attack_edge_button = tk.Button(attack_frame, text="开始攻击", command=self.attack_edge)
+        self.attack_edge_button.grid(row=3, column=0, padx=(20,10),pady=10, columnspan=2)
+
+        tk.Label(attack_frame, text="攻击点:", font=("黑体",14)).grid(row=4, column=0, padx=10, pady=(15,0), sticky="w", columnspan=2)
+        tk.Label(attack_frame, text="选择指标:", ).grid(row=5, column=0, padx=15, pady=5, sticky="w")
+        attack_metric_node_spinbox = ttk.Combobox(attack_frame, textvariable=self.attack_node_metric, width=10)
+        attack_metric_node_spinbox['values'] = ['max_degree', 'max_betweenness', 'max_coreness', 'max_closeness']
+        # attack_metric_node_spinbox.current(0)
+        attack_metric_node_spinbox.grid(row=5, column=1,padx=10)
+
+        tk.Label(attack_frame, text="攻击次数:").grid(row=6, column=0, padx=15, pady=5, sticky="w")
+        tk.Entry(attack_frame, width=10, textvariable=self.attack_node_num).grid(row=6, column=1, padx=10, pady=5, sticky="w")
+
+        self.attack_edge_button = tk.Button(attack_frame, text="开始攻击", command=self.attack_node)
+        self.attack_edge_button.grid(row=7, column=0, padx=(20,10),pady=10, columnspan=2)
+
+        tk.Button(attack_frame, text="重置", command=self.reset, width=20).grid(row=8, column=0, pady=25, padx=10, columnspan=2)
+
 
     def attack_edge(self):
         # max_betweenness, max_edge = get_max_betweenness_edge(self._g)
@@ -235,18 +387,36 @@ class Intentional_Attack(Attack_base):
         # self._g.remove_edge(*max_edge)
         # print('attack_edge: ', self._g, max_edge, max_betweenness)
         # self.disable_attack_button(0)
-        self._g = intentional_attack_edge_betweenness(self._g)
-        for i in range(100):
-            self._g = intentional_attack_edge_betweenness(self._g)
-        self.attack_method()
+        attack_num = self.attack_edge_num.get()
+        attack_metric = self.attack_edge_metric.get()
+        self.stop_attack = False
+        for i in range(attack_num):
+            if self.stop_attack:  # 如果标志为True，停止攻击
+                print("Node attack stopped.")
+                break
+            self._g, attacked_node, _ = edge_function_map[attack_metric](self._g)
+            self.highlight_deleted_node(attacked_node)  # 高亮被删除的节点
+            self.update_max_subgraph_label()  # 更新最大子图节点数
+            self.update_line_chart()  # 更新折线图
+            self.attack_method()
+            self.parent_container.update()  # 刷新界面，动态显示
         # self.enable_attack_button()
 
     def attack_node(self):
         # self.disable_attack_button(1)
-        max_node, max_betweenness  = get_max_betweenness_node(self._g)
-        self._g = nx.Graph(self._g)
-        self._g.remove_node(max_node)
-        print('attack_node: ', self._g, max_node, max_betweenness)
-        self.attack_method()
+        # self._g = intentional_attack_node_betweenness(self._g)
+        attack_num = self.attack_node_num.get()
+        attack_metric = self.attack_node_metric.get()
+        self.stop_attack = False
+        for i in range(attack_num):
+            if self.stop_attack:  # 如果标志为True，停止攻击
+                print("Node attack stopped.")
+                break
+            self._g, attacked_node, _ = node_function_map[attack_metric](self._g)
+            self.highlight_deleted_node(attacked_node)  # 高亮被删除的节点
+            self.update_max_subgraph_label()  # 更新最大子图节点数
+            self.update_line_chart()  # 更新折线图
+            self.attack_method()
+            self.parent_container.update()  # 刷新界面，动态显示
         # self.enable_attack_button()
 

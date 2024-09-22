@@ -108,12 +108,12 @@ def build_graph(data_path, num_nodes=2000, seed=2024):
 #     if is_show:
 #         plt.show()
 def draw_graph(g, save_path=None, is_show=True, pos=None):
-    fig, ax = plt.subplots(figsize=(20, 15))
+    fig, ax = plt.subplots(figsize=(12, 9))
     if pos is None:
         pos = nx.spring_layout(g, seed=draw_seed)
     nx.draw_networkx_nodes(g, pos, ax=ax, node_size=20)
     nx.draw_networkx_edges(g, pos, ax=ax, alpha=0.4)
-    ax.set_title("Graph")
+    ax.set_title("Graph", fontsize=24)
     ax.set_axis_off()
     fig.tight_layout()
     if save_path is not None:
@@ -157,7 +157,7 @@ def draw_betweenness_centrality(G):
     community_index = {n: i for i, com in enumerate(lpc) for n in com}
 
     #### draw graph ####
-    fig, ax = plt.subplots(figsize=(20, 15))
+    fig, ax = plt.subplots(figsize=(12, 9), fontsize=24)
     pos = nx.spring_layout(G, k=0.15, seed=4572321)
     node_color = [community_index[n] for n in G]
     node_size = [v * 20000 for v in centrality.values()]

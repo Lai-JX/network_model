@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 def draw_edge_betweenness_distribution(g):
     edge_bet = nx.edge_betweenness_centrality(g)
     bet_sequence = sorted(edge_bet.values(), reverse=True)
-    fig, ax = plt.subplots(figsize=(20, 15))
+    fig, ax = plt.subplots(figsize=(4, 3))
     ax.bar(*np.unique(bet_sequence, return_counts=True), width=0.005, color='red')
     ax.set_title("Edge betweenness histogram")
     ax.set_xlabel("Edge betweenness")

@@ -60,6 +60,8 @@ draw_k_core(g, 5)
 from closeness import draw_closeness_distribution
 
 draw_closeness_distribution(g)
+print('average closeness:', np.average(list(nx.closeness_centrality(g).values())))
+
 
 # edge betweenness
 from betweenness import draw_edge_betweenness_distribution, get_max_betweenness_edge, \

@@ -28,3 +28,23 @@ def draw_k_core(g, k, save_path=None, is_show=True):
         plt.savefig(save_path)
     if is_show:
         plt.show()
+
+
+
+def get_max_coreness_node(g):
+    node_coreness = nx.core_number(g)
+    max_coreness = 0
+    max_node = 0
+    for n in node_coreness:
+        c = node_coreness[n]
+        if c > max_coreness:
+            max_coreness = c
+            max_node = n
+    return max_node, max_coreness
+
+
+def intentional_attack_node_coreness(g):
+    g = nx.Graph(g)
+    attacked_node, attacked_coreness = get_max_coreness_node(g)
+    g.remove_node(attacked_node)
+    return g, attacked_node, attacked_coreness

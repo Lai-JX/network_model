@@ -3,3 +3,4 @@
 .idea/
 *.png
 analysis-cgr
+__pycache__

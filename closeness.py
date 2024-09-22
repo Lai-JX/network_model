@@ -12,3 +12,20 @@ def draw_closeness_distribution(g):
     ax.set_ylabel("# of Nodes")
     fig.tight_layout()
     plt.show()
+
+def get_max_closeness_node(g):
+    node_closeness = nx.closeness_centrality(g)
+    max_closeness = 0
+    max_node = None
+    for n, c in node_closeness.items():
+        if c > max_closeness:
+            max_closeness = c
+            max_node = n
+    return max_node, max_closeness
+
+
+def intentional_attack_node_closeness(g):
+    g = nx.Graph(g)
+    attacked_node, attacked_closeness = get_max_closeness_node(g)
+    g.remove_node(attacked_node)
+    return g, attacked_node, attacked_closeness

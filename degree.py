@@ -36,3 +36,21 @@ def draw_degree_rank(g, save_path=None, is_show=True):
         plt.savefig(save_path)
     if is_show:
         plt.show()
+
+
+def get_max_degree_node(g):
+    node_degree = dict(g.degree())
+    max_degree = 0
+    max_node = None
+    for n, d in node_degree.items():
+        if d > max_degree:
+            max_degree = d
+            max_node = n
+    return max_node, max_degree
+
+
+def intentional_attack_node_degree(g):
+    g = nx.Graph(g)
+    attacked_node, attacked_degree = get_max_degree_node(g)
+    g.remove_node(attacked_node)
+    return g, attacked_node, attacked_degree

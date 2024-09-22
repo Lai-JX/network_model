@@ -168,7 +168,7 @@ def intentional_attacks_window():
 
 
 ##############################################################################################
-tk.Label(operation1, text="选择数据集",font=20).grid(padx=10, pady=10,row=0, column=0, sticky="w")
+tk.Label(operation1, text="随机种子",font=20).grid(padx=10, pady=10,row=0, column=0, sticky="w")
 dataset_dropdown = tk.Entry(operation1,  textvariable=dataset_var)
 dataset_dropdown.grid(row=7, column=1, padx=10, pady=5)
 dataset_dropdown.grid(row=0, column=1, sticky="w", columnspan=2)

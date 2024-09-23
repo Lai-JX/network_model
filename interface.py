@@ -8,7 +8,7 @@ import networkx as nx
 
 from pathlib import Path
 import sys
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 sys.path.append(str(BASE_DIR))
 
 from libs.utils import build_graph, find_subgraph, draw_graph, reindex_graph, draw_seed
@@ -81,7 +81,6 @@ def _build_graph():
 
     # clustering_vertex_spinbox.configure(values=list(G.nodes))
     # clustering_vertex_spinbox.values = list(G.nodes)
-    print(G.nodes)
     degree_vertex_spinbox.configure(values=list(G.nodes))
     degree_vertex_spinbox.values = list(G.nodes)
     coreness_vertex_spinbox.configure(values=list(G.nodes))
@@ -168,13 +167,13 @@ def show_5core_distribution():
     show_k_core_distribution(5)
 
 def random_attacks_window():
-    from attack import Attack_base
+    from libs.attack import Attack_base
 
     attack = Attack_base(operation3,seed, G, )
     attack.window()
 
 def intentional_attacks_window():
-    from attack import Intentional_Attack
+    from libs.attack import Intentional_Attack
 
     attack = Intentional_Attack(operation3,seed, G, )
     attack.window()

@@ -4,7 +4,12 @@ import random
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from utils import build_graph
+from pathlib import Path
+import sys
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))
+
+from libs.utils import build_graph
 
 # 构建并保存未被攻击的初始图
 g_original, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv')

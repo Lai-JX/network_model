@@ -1,11 +1,17 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from betweenness import intentional_attack_node_betweenness, intentional_attack_edge_betweenness
-from closeness import intentional_attack_node_closeness
-from coreness import intentional_attack_node_coreness
-from degree import intentional_attack_node_degree
-from utils import build_graph
+from pathlib import Path
+import sys
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))
+
+
+from libs.betweenness import intentional_attack_node_betweenness, intentional_attack_edge_betweenness
+from libs.closeness import intentional_attack_node_closeness
+from libs.coreness import intentional_attack_node_coreness
+from libs.degree import intentional_attack_node_degree
+from libs.utils import build_graph
 
 # 构建并保存未被攻击的初始图
 g_original, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv')

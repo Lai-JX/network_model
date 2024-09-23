@@ -7,12 +7,18 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from utils import build_graph, find_subgraph, draw_graph, draw_seed
-from betweenness import random_attack_edge_betweenness, random_attack_node_betweenness, get_max_betweenness_edge, \
+
+from pathlib import Path
+import sys
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))
+
+from libs.utils import build_graph, find_subgraph, draw_graph, draw_seed
+from libs.betweenness import random_attack_edge_betweenness, random_attack_node_betweenness, get_max_betweenness_edge, \
     get_max_betweenness_node, intentional_attack_edge_betweenness,  intentional_attack_node_betweenness
-from degree import intentional_attack_node_degree
-from coreness import intentional_attack_node_coreness
-from closeness import intentional_attack_node_closeness
+from libs.degree import intentional_attack_node_degree
+from libs.coreness import intentional_attack_node_coreness
+from libs.closeness import intentional_attack_node_closeness
 node_function_map = {
     'max_degree' : intentional_attack_node_degree,
     'max_betweenness' : intentional_attack_node_betweenness,

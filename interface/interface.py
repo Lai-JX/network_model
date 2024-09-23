@@ -6,12 +6,15 @@ from tkinter import ttk
 import networkx as nx
 # from anyio import value
 
-# import main
+from pathlib import Path
+import sys
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))
 
-from utils import build_graph, find_subgraph, draw_graph, reindex_graph, draw_seed
-from degree import draw_degree_rank
-from betweenness import random_attack_edge_betweenness
-from coreness import draw_k_core
+from libs.utils import build_graph, find_subgraph, draw_graph, reindex_graph, draw_seed
+from libs.degree import draw_degree_rank
+from libs.betweenness import random_attack_edge_betweenness
+from libs.coreness import draw_k_core
 from PIL import Image, ImageTk
 
 #########################################################
@@ -78,6 +81,7 @@ def _build_graph():
 
     # clustering_vertex_spinbox.configure(values=list(G.nodes))
     # clustering_vertex_spinbox.values = list(G.nodes)
+    print(G.nodes)
     degree_vertex_spinbox.configure(values=list(G.nodes))
     degree_vertex_spinbox.values = list(G.nodes)
     coreness_vertex_spinbox.configure(values=list(G.nodes))
@@ -119,7 +123,7 @@ def _build_graph():
 #     clustering_output.text = coefficient
 
 def output_degree():
-    node = degree_node.get()
+    node = int(degree_node.get())
     degree = G.degree[node]
     degree_output.configure(text=degree)
     degree_output.text=degree
@@ -134,7 +138,7 @@ def show_degree_distribution():
     mainloop()
 
 def output_coreness():
-    node = coreness_node.get()
+    node = int(coreness_node.get())
     coreness = nx.core_number(G)[node]
     coreness_output.configure(text=coreness)
     coreness_output.text=coreness

@@ -6,7 +6,12 @@ import datetime as dt
 
 import numpy as np
 
-from utils import build_graph
+from pathlib import Path
+import sys
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))
+
+from libs.utils import build_graph
 
 # build graph
 g, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv')
@@ -27,7 +32,7 @@ plt.show()
 print('diameter:', nx.diameter(g))
 
 # clustering coefficient
-from cluster_coefficient import average_cluster_coefficient, draw_cluster_coefficient_distribution
+from libs.cluster_coefficient import average_cluster_coefficient, draw_cluster_coefficient_distribution
 
 print('average clustering coefficient:', average_cluster_coefficient(g))
 draw_cluster_coefficient_distribution(g)
@@ -39,14 +44,14 @@ for component in (g.subgraph(component).copy() for component in nx.connected_com
     component_count += 1
 
 # degree
-from degree import draw_degree_distribution, average_degree, draw_degree_rank
+from libs.degree import draw_degree_distribution, average_degree, draw_degree_rank
 
 print('average degree:', average_degree(g))
 draw_degree_distribution(g)
 draw_degree_rank(g)
 
 # coreness
-from coreness import draw_coreness_distribution, draw_k_core
+from libs.coreness import draw_coreness_distribution, draw_k_core
 
 print('average coreness:', np.average(list(nx.core_number(g).values())))
 draw_coreness_distribution(g)
@@ -57,14 +62,14 @@ draw_k_core(g, 4)
 draw_k_core(g, 5)
 
 # closeness
-from closeness import draw_closeness_distribution
+from libs.closeness import draw_closeness_distribution
 
 draw_closeness_distribution(g)
 print('average closeness:', np.average(list(nx.closeness_centrality(g).values())))
 
 
 # edge and node betweenness
-from betweenness import draw_edge_betweenness_distribution, get_max_betweenness_edge, \
+from libs.betweenness import draw_edge_betweenness_distribution, get_max_betweenness_edge, \
     intentional_attack_edge_betweenness, random_attack_edge_betweenness, draw_node_betweenness_distribution
 
 print('average edge betweenness:', np.average(list(nx.edge_betweenness_centrality(g).values())))

@@ -2,7 +2,13 @@ import tkinter as tk
 from tkinter import Canvas, Frame, Label
 import networkx as nx
 import random
-from utils import build_graph
+
+from pathlib import Path
+import sys
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))
+
+from libs.utils import build_graph
 
 
 class GraphVisualizer:

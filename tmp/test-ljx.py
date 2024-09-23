@@ -1,7 +1,13 @@
 from random import sample
 import networkx as nx
 import matplotlib.pyplot as plt
-from utils import build_graph, draw_graph, find_subgraph,draw_betweenness_centrality
+
+from pathlib import Path
+import sys
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))
+
+from libs.utils import build_graph, draw_graph, find_subgraph,draw_betweenness_centrality
 import numpy as np
 
 # build graph

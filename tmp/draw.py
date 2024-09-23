@@ -1,6 +1,12 @@
 import networkx as nx
 import plotly.graph_objects as go
-from utils import build_graph
+
+from pathlib import Path
+import sys
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))
+
+from libs.utils import build_graph
 
 G, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', 2000)
 print(G)

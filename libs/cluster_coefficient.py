@@ -10,7 +10,7 @@ def average_cluster_coefficient(g):
         cc_sum += node_cc[node]
     return cc_sum / g.number_of_nodes()
 
-def draw_cluster_coefficient_distribution(g):
+def draw_cluster_coefficient_distribution(g, save_path=None, is_show=True):
     node_cc = nx.clustering(g)
     cc_sequence = sorted(node_cc.values(), reverse=True)
     fig, ax = plt.subplots(figsize=(4, 3))
@@ -19,4 +19,7 @@ def draw_cluster_coefficient_distribution(g):
     ax.set_xlabel("clustering coefficient")
     ax.set_ylabel("# of Nodes")
     fig.tight_layout()
-    plt.show()
+    if save_path is not None:
+        plt.savefig(save_path)
+    if is_show:
+        plt.show()

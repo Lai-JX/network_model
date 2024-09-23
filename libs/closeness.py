@@ -2,7 +2,7 @@ import networkx as nx
 import numpy as np
 from matplotlib import pyplot as plt
 
-def draw_closeness_distribution(g):
+def draw_closeness_distribution(g, save_path=None, is_show=True):
     node_closeness = nx.closeness_centrality(g)
     closeness_sequence = sorted(node_closeness.values(), reverse=True)
     fig, ax = plt.subplots(figsize=(4, 3))
@@ -11,7 +11,10 @@ def draw_closeness_distribution(g):
     ax.set_xlabel("Closeness")
     ax.set_ylabel("# of Nodes")
     fig.tight_layout()
-    plt.show()
+    if save_path is not None:
+        plt.savefig(save_path)
+    if is_show:
+        plt.show()
 
 def get_max_closeness_node(g):
     node_closeness = nx.closeness_centrality(g)

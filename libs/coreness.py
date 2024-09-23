@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-def draw_coreness_distribution(g):
+def draw_coreness_distribution(g, save_path=None, is_show=True):
     node_coreness = nx.core_number(g)
     closeness_sequence = sorted(node_coreness.values(), reverse=True)
     fig, ax = plt.subplots(figsize=(4, 3))
@@ -12,7 +12,10 @@ def draw_coreness_distribution(g):
     ax.set_xlabel("Coreness")
     ax.set_ylabel("# of Nodes")
     fig.tight_layout()
-    plt.show()
+    if save_path is not None:
+        plt.savefig(save_path)
+    if is_show:
+        plt.show()
 
 
 def draw_k_core(g, k, save_path=None, is_show=True):

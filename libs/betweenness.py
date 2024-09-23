@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-def draw_edge_betweenness_distribution(g):
+def draw_edge_betweenness_distribution(g, save_path=None, is_show=True):
     edge_bet = nx.edge_betweenness_centrality(g)
     bet_sequence = sorted(edge_bet.values(), reverse=True)
     fig, ax = plt.subplots(figsize=(4, 3))
@@ -14,10 +14,13 @@ def draw_edge_betweenness_distribution(g):
     ax.set_xlabel("Edge betweenness")
     ax.set_ylabel("# of Edges")
     fig.tight_layout()
-    plt.show()
+    if save_path is not None:
+        plt.savefig(save_path)
+    if is_show:
+        plt.show()
 
 
-def draw_node_betweenness_distribution(g):
+def draw_node_betweenness_distribution(g, save_path=None, is_show=True):
     node_bet = nx.betweenness_centrality(g)
     bet_sequence = sorted(node_bet.values(), reverse=True)
 
@@ -27,7 +30,10 @@ def draw_node_betweenness_distribution(g):
     ax.set_xlabel("Node betweenness")
     ax.set_ylabel("# of Nodes")
     fig.tight_layout()
-    plt.show()
+    if save_path is not None:
+        plt.savefig(save_path)
+    if is_show:
+        plt.show()
 
 def get_max_betweenness_edge(g):
     edge_bet = nx.edge_betweenness_centrality(g)

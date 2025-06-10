@@ -231,30 +231,30 @@ def intentional_attacks_window():
 
 
 ##############################################################################################
-tk.Label(operation1, text="随机种子",font=20).grid(padx=10, pady=10,row=0, column=0, sticky="w")
+tk.Label(operation1, text="Random Seed",font=20).grid(padx=10, pady=10,row=0, column=0, sticky="w")
 dataset_dropdown = tk.Entry(operation1,  textvariable=dataset_var)
 dataset_dropdown.grid(row=7, column=1, padx=10, pady=5)
 dataset_dropdown.grid(row=0, column=1, sticky="w", columnspan=2)
 
-tk.Button(operation1, text="画图", command=_build_graph).grid(row=0, column=3, padx=(20,0), sticky="w")
+tk.Button(operation1, text="Draw", command=_build_graph).grid(row=0, column=3, padx=(20,0), sticky="w")
 
-tk.Label(operation1, text="节点数",font=18).grid(row=1, column=0, padx=10,  pady=5)
+tk.Label(operation1, text="Node Count",font=18).grid(row=1, column=0, padx=10,  pady=5)
 node_num_output = tk.Label(operation1, text=0, width=10, background='white')
 node_num_output.grid(row=1, column=1, pady=5)
 
-tk.Label(operation1, text="边数",font=18).grid(row=1, column=2, padx=10,  pady=5)
+tk.Label(operation1, text="Edge Count",font=18).grid(row=1, column=2, padx=10,  pady=5)
 edge_num_output = tk.Label(operation1, text=0, width=10, background='white')
 edge_num_output.grid(row=1, column=3, pady=5)
 
-tk.Label(operation1, text="直径",font=18).grid(row=2, column=0, padx=10,  pady=5)
+tk.Label(operation1, text="Diameter",font=18).grid(row=2, column=0, padx=10,  pady=5)
 diameter_output = tk.Label(operation1, text=0, width=10, background='white')
 diameter_output.grid(row=2, column=1, pady=5)
 
-tk.Label(operation1, text="最短路径",font=18).grid(row=2, column=2, padx=10,  pady=5)
+tk.Label(operation1, text="Shortest Path",font=18).grid(row=2, column=2, padx=10,  pady=5)
 avg_path_output = tk.Label(operation1, text=0, width=10, background='white')
 avg_path_output.grid(row=2, column=3, pady=5)
 
-tk.Label(operation1, text="计算clustering coefficient:", font=("黑体",14)).grid(row=3, column=0, padx=10, pady=5, sticky="w", columnspan=4)
+tk.Label(operation1, text="Calculate clustering coefficient:", font=("黑体",14)).grid(row=3, column=0, padx=10, pady=5, sticky="w", columnspan=4)
 # tk.Label(operation1, text="选择顶点:").grid(row=3, column=0, padx=10, pady=5, sticky="w")
 
 # clustering_vertex_spinbox = ttk.Combobox(operation1, textvariable=coefficient_node, width=10)
@@ -264,52 +264,52 @@ tk.Label(operation1, text="计算clustering coefficient:", font=("黑体",14)).g
 # tk.Button(operation1, text="输出", command=output_coefficient).grid(row=3, column=2, sticky="w")
 # clustering_output = tk.Label(operation1,width=10, text=0, background='white')
 # clustering_output.grid(row=3, column=3, padx=(0,10), pady=10, sticky="w")
-tk.Label(operation1, text="平均", font=18).grid(row=4, column=0,  padx=10, pady=5)
+tk.Label(operation1, text="Average", font=18).grid(row=4, column=0,  padx=10, pady=5)
 clustering_avg_output = tk.Label(operation1,width=10, text=0, background='white')
 clustering_avg_output.grid(row=4, column=1, pady=5)
-tk.Button(operation1, text="clustering coefficient 分布", command=show_coefficient_distribution).grid(row=4, column=2, padx=(15,0), pady=5,columnspan=2)
+tk.Button(operation1, text="Clustering coefficient distribution", command=show_coefficient_distribution).grid(row=4, column=2, padx=(15,0), pady=5,columnspan=2)
 
 ##############################################################################################
-# Degree 相关的布局
-tk.Label(operation2, text="计算Degree:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=5, sticky="w", columnspan=4)
-tk.Label(operation2, text="选择顶点:").grid(row=1, column=0, padx=10, pady=5, sticky="w")
+# Degree related layout
+tk.Label(operation2, text="Calculate Degree:", font=("Arial",14)).grid(row=0, column=0, padx=10, pady=5, sticky="w", columnspan=4)
+tk.Label(operation2, text="Select node:").grid(row=1, column=0, padx=10, pady=5, sticky="w")
 degree_vertex_spinbox = ttk.Combobox(operation2, textvariable=degree_node, width=10)
 # degree_vertex_spinbox['values'] = list([1])
 # degree_vertex_spinbox.current(0)
 degree_vertex_spinbox.grid(row=1, column=1,padx=10)
-tk.Button(operation2, text="输出",command=output_degree).grid(row=1, column=2,padx=10)
+tk.Button(operation2, text="Output",command=output_degree).grid(row=1, column=2,padx=10)
 degree_output = tk.Label(operation2, width=10, background='white')
 degree_output.grid(row=1, column=3, padx=10, )
-tk.Label(operation2, text="平均Degree:").grid(row=2, column=0, padx=10, sticky="w",)
+tk.Label(operation2, text="Average Degree:").grid(row=2, column=0, padx=10, sticky="w",)
 avg_degree_output = tk.Label(operation2, text=0,width=10, background='white')
 avg_degree_output.grid(row=2, column=1, padx=10,sticky="w")
-tk.Button(operation2, text="显示度的分布", command=show_degree_distribution).grid(row=2, column=2, padx=10, columnspan=2)
+tk.Button(operation2, text="Show degree distribution", command=show_degree_distribution).grid(row=2, column=2, padx=10, columnspan=2)
 
-# 计算betweenness
-tk.Label(operation2, text="计算betweenness:", font=("黑体",14)).grid(row=3, column=0, padx=10, pady=5, sticky="w", columnspan=4)
-tk.Button(operation2, text="node betweenness 分布", command=show_node_betweenness_distribution).grid(row=4, column=0, padx=10, columnspan=2)
-tk.Button(operation2, text="edge betweenness 分布", command=show_edge_betweenness_distribution).grid(row=4, column=2, padx=10,columnspan=2)
+# Calculate betweenness
+tk.Label(operation2, text="Calculate betweenness:", font=("Arial",14)).grid(row=3, column=0, padx=10, pady=5, sticky="w", columnspan=4)
+tk.Button(operation2, text="Node betweenness distribution", command=show_node_betweenness_distribution).grid(row=4, column=0, padx=10, columnspan=2)
+tk.Button(operation2, text="Edge betweenness distribution", command=show_edge_betweenness_distribution).grid(row=4, column=2, padx=10,columnspan=2)
 
-# 计算betweenness
-tk.Label(operation2, text="计算closeness:", font=("黑体",14)).grid(row=5, column=0, padx=10, pady=5, sticky="w", columnspan=4)
-tk.Button(operation2, text="closeness 分布", command=show_closeness_distribution).grid(row=5, column=2, padx=10, sticky="w",columnspan=2)
+# Calculate closeness
+tk.Label(operation2, text="Calculate closeness:", font=("Arial",14)).grid(row=5, column=0, padx=10, pady=5, sticky="w", columnspan=4)
+tk.Button(operation2, text="Closeness distribution", command=show_closeness_distribution).grid(row=5, column=2, padx=10, sticky="w",columnspan=2)
 
 ##############################################################################################
-# 计算 coreness
-tk.Label(operation3, text="计算coreness:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=5, sticky="w",columnspan=4)
+# Calculate coreness
+tk.Label(operation3, text="Calculate coreness:", font=("Arial",14)).grid(row=0, column=0, padx=10, pady=5, sticky="w",columnspan=4)
 coreness_Frame = Frame(operation3)
 coreness_Frame.grid(row=1, column=0,columnspan=4)
-tk.Label(coreness_Frame, text="选择顶点:").grid(row=0, column=0, padx=10, pady=5, sticky="w")
+tk.Label(coreness_Frame, text="Select node:").grid(row=0, column=0, padx=10, pady=5, sticky="w")
 coreness_vertex_spinbox = ttk.Combobox(coreness_Frame, textvariable=coreness_node, width=5)
 # coreness_vertex_spinbox['values'] = list([1])
 # coreness_vertex_spinbox.current(0)
 coreness_vertex_spinbox.grid(row=0, column=1, pady=5, padx=10)
-tk.Button(coreness_Frame, text="输出", command=output_coreness).grid(row=0, column=2, pady=5, padx=10)
+tk.Button(coreness_Frame, text="Output", command=output_coreness).grid(row=0, column=2, pady=5, padx=10)
 coreness_output = tk.Label(coreness_Frame, background='white', width=5)
 coreness_output.grid(row=0, column=3, pady=5,padx=10,sticky="w",columnspan=2)
-tk.Button(coreness_Frame, text="分布图", command=show_coreness_distribution).grid(row=0, column=5, pady=5, padx=(15,0))
+tk.Button(coreness_Frame, text="Distribution", command=show_coreness_distribution).grid(row=0, column=5, pady=5, padx=(15,0))
 
-tk.Label(operation3, text="计算图的coreness:", font=("黑体",14)).grid(row=2, column=0, padx=10, pady=5, sticky="w",columnspan=4)
+tk.Label(operation3, text="Calculate coreness of the graph:", font=("Arial",14)).grid(row=2, column=0, padx=10, pady=5, sticky="w",columnspan=4)
 core_Frame = Frame(operation3)
 core_Frame.grid(row=3, column=0,columnspan=4)
 tk.Button(core_Frame, text="1-core", command=show_1core_distribution).grid(row=0, column=0, padx=(20,10), pady=5)
@@ -318,10 +318,10 @@ tk.Button(core_Frame, text="3-core", command=show_3core_distribution).grid(row=0
 tk.Button(core_Frame, text="4-core", command=show_4core_distribution).grid(row=0, column=3, padx=10,  pady=5)
 tk.Button(core_Frame, text="5-core", command=show_5core_distribution).grid(row=0, column=4, padx=10,  pady=5)
 
-# 测试图的鲁棒性
-tk.Label(operation3, text="测试图的鲁棒性:", font=("黑体",10)).grid(row=4, column=0, padx=10, pady=5, sticky="w",columnspan=4)
-tk.Button(operation3, text="随机的攻击测试", command=random_attacks_window).grid(row=4, column=1, columnspan=2)
-tk.Button(operation3, text="有意的攻击测试", command=intentional_attacks_window).grid(row=4, column=3, columnspan=2)
+# Test robustness of the graph
+tk.Label(operation3, text="Test robustness of the graph:", font=("Arial",10)).grid(row=4, column=0, padx=10, pady=5, sticky="w",columnspan=4)
+tk.Button(operation3, text="Random attack test", command=random_attacks_window).grid(row=4, column=1, columnspan=2)
+tk.Button(operation3, text="Intentional attack test", command=intentional_attacks_window).grid(row=4, column=3, columnspan=2)
 
 
 root.mainloop()

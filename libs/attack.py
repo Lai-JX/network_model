@@ -43,19 +43,19 @@ class Attack_base:
         self.average_shortest_path_length = round(nx.average_shortest_path_length(G),4)
         self.connected_components = round(nx.number_connected_components(G),4)
 
-        # 用于控制攻击的标志
+        # Used to control the attack flag
         self.stop_attack = False
-        # 初始化折线图数据
-        self.attack_count = 0  # 攻击次数
-        self.max_subgraph_sizes = []  # 存储每次攻击后的最大子图节点数
+        # Initialize line chart data
+        self.attack_count = 0  # Number of attacks
+        self.max_subgraph_sizes = []  # Store the number of nodes in the largest subgraph after each attack
 
-        # 初始化折线图 Figure
+        # Initialize line chart Figure
         self.fig, self.ax = plt.subplots(figsize=(4, 3))
         self.ax.set_xlabel("Attack Count")
         self.ax.set_ylabel("Max Subgraph Size")
-        self.line, = self.ax.plot([], [], 'r-')  # 初始化折线图的线
-        self.ax.set_xlim(0, 100)  # 攻击次数的范围，可以动态调整
-        self.ax.set_ylim(0, len(G.nodes))  # 节点数范围是图的总节点数
+        self.line, = self.ax.plot([], [], 'r-')  # Initialize the line of the line chart
+        self.ax.set_xlim(0, 100)  # The range of the number of attacks, can be dynamically adjusted
+        self.ax.set_ylim(0, len(G.nodes))  # The range of the number of nodes is the total number of nodes in the graph
         self.fig.tight_layout()
         self.removed_elements = []
 
@@ -66,39 +66,39 @@ class Attack_base:
 
     def update_max_subgraph_label(self):
         """
-        计算并更新最大连通子图的节点数，更新右上角的折线图数据
+        Calculate and update the number of nodes in the largest connected subgraph, update the data of the line chart in the upper right corner
         """
-        max_subgraph = max(nx.connected_components(self._g), key=len)  # 找到节点最多的子图
-        max_subgraph_size = len(max_subgraph)  # 计算最大子图的节点数
-        self.max_subgraph_sizes.append(max_subgraph_size)  # 保存最大子图的节点数
-        self.attack_count += 1  # 增加攻击次数
+        max_subgraph = max(nx.connected_components(self._g), key=len)  # Find the subgraph with the most nodes
+        max_subgraph_size = len(max_subgraph)  # Calculate the number of nodes in the largest subgraph
+        self.max_subgraph_sizes.append(max_subgraph_size)  # Save the number of nodes in the largest subgraph
+        self.attack_count += 1  # Increase the number of attacks
 
     def update_line_chart(self):
         """
-        更新右上角的折线图，动态显示最大子图节点数
+        Update the line chart in the upper right corner, dynamically display the number of nodes in the largest subgraph
         """
-        # 更新折线图数据
+        # Update line chart data
         self.line.set_data(range(self.attack_count), self.max_subgraph_sizes)
-        self.ax.set_xlim(0, max(100, self.attack_count))  # 动态调整 x 轴范围
-        self.ax.set_ylim(0, max(self.max_subgraph_sizes) + 10)  # 动态调整 y 轴范围
+        self.ax.set_xlim(0, max(100, self.attack_count))  # Dynamically adjust the range of the x-axis
+        self.ax.set_ylim(0, max(self.max_subgraph_sizes) + 10)  # Dynamically adjust the range of the y-axis
         self.fig.tight_layout()
-        # 更新折线图，显示当前删除的节点或边
-        self.canvas.draw()  # 刷新图表
+        # Update the line chart, displaying the currently deleted nodes or edges
+        self.canvas.draw()  # Refresh the chart
 
     def update_removed_display(self, element):
         """
-        更新显示已删除的节点或边
+        Update the display of deleted nodes or edges
         """
-        # 判断是边还是节点
+        # Determine whether it is an edge or a node
         if isinstance(element, tuple):
             text = f"{element}"
         else:
             text = f"{element}"
         
-        # 更新 Label 内容，将新的删除项添加到显示区域
-        new_text = text + " →"
-        self.removed_display_text.insert(tk.END, new_text)  # 在文本末尾插入文本
-        self.removed_display_text.see(tk.END)  # 滚动到最后一行
+        # Update Label content, add the new deletion item to the display area
+        new_text = text + " -> "
+        self.removed_display_text.insert(tk.END, new_text)  # Insert text at the end of the text
+        self.removed_display_text.see(tk.END)  # Scroll to the last line
 
     def window(self):
         top = Toplevel(self.parent_container, width=800, height=900)
@@ -117,11 +117,11 @@ class Attack_base:
         self.image_label_after=Label(graph, image=image_after)
         self.image_label_after.pack()
 
-        # 将折线图嵌入到 Tkinter 界面中
+        # Embed the line chart into the Tkinter interface
         self.canvas = FigureCanvasTkAgg(self.fig, master=_operation)
-        self.canvas.get_tk_widget().pack(side='top', padx=10, pady=10)  # 将图表放在右上角
+        self.canvas.get_tk_widget().pack(side='top', padx=10, pady=10)  # Place the chart in the upper right corner
 
-        # 在图下方创建显示删除节点或边的Label
+        # Create a Label to display deleted nodes or edges below the chart
         self.removed_display_text = Text(_operation, height=5, width=50, wrap=tk.WORD)
         self.removed_display_text.pack(side='top', pady=10)
         self.removed_display_text.insert(tk.END, "Removed Nodes/Edges: ")
@@ -134,13 +134,13 @@ class Attack_base:
         attack_frame.pack(expand=True)
 
 
-        # 创建行标题的 Treeview
+        # Create row header Treeview
         row_headers = ttk.Treeview(show_frame, show="headings",height=6)
         row_headers["columns"] = ("Row")
-        row_headers.heading("Row", text="属性")
+        row_headers.heading("Row", text="Property")
         row_headers.column("Row", width=150, anchor="center")
 
-        # 添加行标题数据
+        # Add row header data
         row_headers.insert("", "end", values=("Node Num",))
         row_headers.insert("", "end", values=("Edge Num",))
         row_headers.insert("", "end", values=("Diameter",))
@@ -148,21 +148,21 @@ class Attack_base:
         row_headers.insert("", "end", values=("Average Path Length",))
         row_headers.insert("", "end", values=("Connected Components",))
 
-        # 放置行标题的 Treeview
+        # Place row header Treeview
         row_headers.grid(row=0, column=0, sticky="nsew")
 
-        # 创建主表格
+        # Create main table
         tree = ttk.Treeview(show_frame, columns=("before", "after"), show='headings',height=6)
         self.tree = tree
-        # 设置每列的标题
-        tree.heading("before", text="攻击前")
-        tree.heading("after", text="攻击后")
+        # Set column titles
+        tree.heading("before", text="Before Attack")
+        tree.heading("after", text="After Attack")
 
-        # 设置每列的宽度
+        # Set column widths
         tree.column("before", width=50)
         tree.column("after", width=50)
 
-        # 插入一些初始数据
+        # Insert some initial data
         tree.insert("", "end", values=(len(self._g.nodes),len(self._g.nodes)))
         tree.insert("", "end", values=(len(self._g.edges),len(self._g.edges)))
         tree.insert("", "end", values=(self.g_diameter,self.g_diameter))
@@ -170,7 +170,7 @@ class Attack_base:
         tree.insert("", "end", values=(self.average_shortest_path_length, self.average_shortest_path_length))
         tree.insert("", "end", values=(self.connected_components, self.connected_components))
 
-        # 放置主表格
+        # Place main table
         tree.grid(row=0, column=1, sticky="nsew")
 
         self.set_attack_frame(attack_frame)
@@ -179,19 +179,19 @@ class Attack_base:
         mainloop()
     
     def set_attack_frame(self, attack_frame):
-        tk.Label(attack_frame, text="攻击边:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=(10,0), sticky="w", columnspan=2)
-        tk.Label(attack_frame, text="攻击次数:").grid(row=1, column=0, padx=15, pady=5, sticky="w")
+        tk.Label(attack_frame, text="Attack Edge:", font=("Arial",14)).grid(row=0, column=0, padx=10, pady=(10,0), sticky="w", columnspan=2)
+        tk.Label(attack_frame, text="Attack Count:").grid(row=1, column=0, padx=15, pady=5, sticky="w")
         tk.Entry(attack_frame, width=10, textvariable=self.attack_edge_num).grid(row=1, column=1, padx=10, pady=5, sticky="w")
-        self.attack_edge_button = tk.Button(attack_frame, text="开始攻击", command=self.attack_edge)
+        self.attack_edge_button = tk.Button(attack_frame, text="Start Attack", command=self.attack_edge)
         self.attack_edge_button.grid(row=2, column=0, padx=(20,10), columnspan=2)
 
-        tk.Label(attack_frame, text="攻击点:", font=("黑体",14)).grid(row=3, column=0, padx=10, pady=(10,0), sticky="w", columnspan=2)
-        tk.Label(attack_frame, text="攻击次数:").grid(row=4, column=0, padx=15, pady=5, sticky="w")
+        tk.Label(attack_frame, text="Attack Node:", font=("Arial",14)).grid(row=3, column=0, padx=10, pady=(10,0), sticky="w", columnspan=2)
+        tk.Label(attack_frame, text="Attack Count:").grid(row=4, column=0, padx=15, pady=5, sticky="w")
         tk.Entry(attack_frame, width=10, textvariable=self.attack_node_num).grid(row=4, column=1, padx=10, pady=5, sticky="w")
-        self.attack_node_button = tk.Button(attack_frame, text="开始攻击", command=self.attack_node)
+        self.attack_node_button = tk.Button(attack_frame, text="Start Attack", command=self.attack_node)
         self.attack_node_button.grid(row=5, column=0, padx=(20,10), columnspan=2)
 
-        tk.Button(attack_frame, text="重置", command=self.reset, width=20).grid(row=6, column=0, pady=25, padx=10, columnspan=2)
+        tk.Button(attack_frame, text="Reset", command=self.reset, width=20).grid(row=6, column=0, pady=25, padx=10, columnspan=2)
 
 
         
@@ -345,9 +345,9 @@ class Attack_base:
         self.attack_edge_button_text = self.attack_edge_button.cget('text')
         self.attack_node_button_text = self.attack_node_button.cget('text')
         if type == 0:
-            text = "正在攻击边..."
+            text = "Attacking edge..."
         if type == 1:
-            text = "正在攻击点..."
+            text = "Attacking node..."
 
         self.attack_edge_button.configure(text=text, state=tk.DISABLED)
         self.attack_edge_button.text = text
@@ -376,33 +376,33 @@ class Intentional_Attack(Attack_base):
         self.attack_edge_metric = tk.StringVar()
 
     def set_attack_frame(self, attack_frame):
-        tk.Label(attack_frame, text="攻击边:", font=("黑体",14)).grid(row=0, column=0, padx=10, pady=(15,0), sticky="w", columnspan=2)
-        tk.Label(attack_frame, text="选择指标:", ).grid(row=1, column=0, padx=15, pady=5, sticky="w")
+        tk.Label(attack_frame, text="Attack Edge:", font=("Arial",14)).grid(row=0, column=0, padx=10, pady=(15,0), sticky="w", columnspan=2)
+        tk.Label(attack_frame, text="Select Metric:", ).grid(row=1, column=0, padx=15, pady=5, sticky="w")
         attack_metric_edge_spinbox = ttk.Combobox(attack_frame, textvariable=self.attack_edge_metric, width=10)
         attack_metric_edge_spinbox['values'] = ['max_betweenness']
         # attack_metric_edge_spinbox.current(0)
         attack_metric_edge_spinbox.grid(row=1, column=1,padx=10)
 
-        tk.Label(attack_frame, text="攻击次数:").grid(row=2, column=0, padx=15, pady=5, sticky="w")
+        tk.Label(attack_frame, text="Attack Count:").grid(row=2, column=0, padx=15, pady=5, sticky="w")
         tk.Entry(attack_frame, width=10, textvariable=self.attack_edge_num).grid(row=2, column=1, padx=15, pady=5, sticky="w")
 
-        self.attack_edge_button = tk.Button(attack_frame, text="开始攻击", command=self.attack_edge)
+        self.attack_edge_button = tk.Button(attack_frame, text="Start Attack", command=self.attack_edge)
         self.attack_edge_button.grid(row=3, column=0, padx=(20,10),pady=10, columnspan=2)
 
-        tk.Label(attack_frame, text="攻击点:", font=("黑体",14)).grid(row=4, column=0, padx=10, pady=(15,0), sticky="w", columnspan=2)
-        tk.Label(attack_frame, text="选择指标:", ).grid(row=5, column=0, padx=15, pady=5, sticky="w")
+        tk.Label(attack_frame, text="Attack Node:", font=("Arial",14)).grid(row=4, column=0, padx=10, pady=(15,0), sticky="w", columnspan=2)
+        tk.Label(attack_frame, text="Select Metric:", ).grid(row=5, column=0, padx=15, pady=5, sticky="w")
         attack_metric_node_spinbox = ttk.Combobox(attack_frame, textvariable=self.attack_node_metric, width=10)
         attack_metric_node_spinbox['values'] = ['max_degree', 'max_betweenness', 'max_coreness', 'max_closeness']
         # attack_metric_node_spinbox.current(0)
         attack_metric_node_spinbox.grid(row=5, column=1,padx=10)
 
-        tk.Label(attack_frame, text="攻击次数:").grid(row=6, column=0, padx=15, pady=5, sticky="w")
+        tk.Label(attack_frame, text="Attack Count:").grid(row=6, column=0, padx=15, pady=5, sticky="w")
         tk.Entry(attack_frame, width=10, textvariable=self.attack_node_num).grid(row=6, column=1, padx=10, pady=5, sticky="w")
 
-        self.attack_edge_button = tk.Button(attack_frame, text="开始攻击", command=self.attack_node)
+        self.attack_edge_button = tk.Button(attack_frame, text="Start Attack", command=self.attack_node)
         self.attack_edge_button.grid(row=7, column=0, padx=(20,10),pady=10, columnspan=2)
 
-        tk.Button(attack_frame, text="重置", command=self.reset, width=20).grid(row=8, column=0, pady=25, padx=10, columnspan=2)
+        tk.Button(attack_frame, text="Reset", command=self.reset, width=20).grid(row=8, column=0, pady=25, padx=10, columnspan=2)
 
 
     def attack_edge(self):

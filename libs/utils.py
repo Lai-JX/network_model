@@ -116,7 +116,7 @@ def draw_graph(g, save_path=None, is_show=True, pos=None, show_labels =True, nod
 
     # 显示节点编号（标签）
     if show_labels:
-        nx.draw_networkx_labels(g, pos, ax=ax, font_size=12, font_color="black")  # 添加这行显示节点编号
+        nx.draw_networkx_labels(g, pos, ax=ax, font_size=8, font_color="black",)  # 添加这行显示节点编号
 
     ax.set_title("Graph", fontsize=24)
     ax.set_axis_off()

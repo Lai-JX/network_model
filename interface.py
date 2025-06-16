@@ -81,7 +81,8 @@ def _build_graph():
 
     G = reindex_graph(G)
     # 记录pos，用于后续上色
-    pos = nx.spring_layout(G, seed=seed,k=0.15)
+    # pos = nx.spring_layout(G, seed=seed,k=0.15)
+    pos = nx.spring_layout(G, seed=seed)
     G.pos = pos
     draw_graph(G, f'./data/network-{seed}.png', False, pos)
     _image = ImageTk.PhotoImage(Image.open(f'./data/network-{seed}.png').resize((1200,600)))     # .resize((800,400))
@@ -239,7 +240,7 @@ def run_community_detection():
         print("No graph loaded.")
         return
     community_detection.detect_and_draw_communities(G, 
-                                                    save_path=None, show=False,image_label=image_label, seed=seed)
+                                                    save_path=None, show=True,image_label=image_label, seed=seed)
 
 ##############################################################################################
 tk.Label(operation1, text="Random Seed",font=20).grid(padx=10, pady=10,row=0, column=0, sticky="w")
@@ -332,7 +333,7 @@ tk.Button(core_Frame, text="4-core", command=show_4core_distribution).grid(row=0
 tk.Button(core_Frame, text="5-core", command=show_5core_distribution).grid(row=0, column=4, padx=10,  pady=5)
 
 # Test robustness of the graph
-tk.Label(operation3, text="Test robustness of the graph:", font=("Arial",10)).grid(row=4, column=0, padx=10, pady=5, sticky="w",columnspan=4)
+tk.Label(operation3, text="Test robustness:", font=("Arial",10)).grid(row=4, column=0, padx=10, pady=5, sticky="w",columnspan=4)
 tk.Button(operation3, text="Random attack test", command=random_attacks_window).grid(row=4, column=1, columnspan=2)
 tk.Button(operation3, text="Intentional attack test", command=intentional_attacks_window).grid(row=4, column=3, columnspan=2)
 

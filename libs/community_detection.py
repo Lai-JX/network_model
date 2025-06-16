@@ -22,7 +22,9 @@ def detect_and_draw_communities(G, save_path=None, show=True, image_label:Label=
     print(f"Number of communities: {len(community_list)}")
     for i, c in enumerate(community_list):
         print(f"Community {i+1}: {len(c)} nodes")
-
+    if image_label is not None:
+        # 获取plt第二个图
+        update_image_label(G, community_list, image_label, seed=None)
     # 直方图
     plt.figure(figsize=(12,5))
     plt.subplot(1,2,1)
@@ -55,10 +57,6 @@ def detect_and_draw_communities(G, save_path=None, show=True, image_label:Label=
         print(f"Community detection result saved to {save_path}")
     if show:
         plt.show()
-    if image_label is not None:
-        # 获取plt第二个图
-        plt.close()  # 关闭当前图形，避免影响后续绘图
-        update_image_label(G, community_list, image_label, seed=None)
     
 def update_image_label(G, community_list, image_label, seed=None):
     pos = G.pos if hasattr(G, 'pos') else nx.spring_layout(G, seed=seed)

@@ -109,8 +109,8 @@ def build_graph(data_path, num_nodes=2000, seed=2024):
 #         plt.show()
 def draw_graph(g, save_path=None, is_show=True, pos=None, show_labels =True, node_color=None, edge_color=None, node_size=None, edge_size=None):
     fig, ax = plt.subplots(figsize=(12, 9))
-    if pos is None:
-        pos = nx.spring_layout(g, seed=draw_seed,k=0.15)
+    # if pos is None:
+    #     pos = nx.spring_layout(g, seed=draw_seed,k=0.15)
     nx.draw_networkx_nodes(g, pos, ax=ax,  node_color=node_color, node_size=node_size)  # node_size=20,
     nx.draw_networkx_edges(g, pos, ax=ax, alpha=0.4, edge_color=edge_color, width=edge_size)
 
@@ -127,6 +127,7 @@ def draw_graph(g, save_path=None, is_show=True, pos=None, show_labels =True, nod
         plt.show()
     else:
         plt.close()
+        
     
 
 

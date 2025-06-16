@@ -80,8 +80,10 @@ def _build_graph():
     print("after: ",G)
 
     G = reindex_graph(G)
-
-    draw_graph(G, f'./data/network-{seed}.png', False)
+    # 记录pos，用于后续上色
+    pos = nx.spring_layout(G, seed=seed,k=0.15)
+    G.pos = pos
+    draw_graph(G, f'./data/network-{seed}.png', False, pos)
     _image = ImageTk.PhotoImage(Image.open(f'./data/network-{seed}.png').resize((1200,600)))     # .resize((800,400))
 
     image_label.configure(image = _image)
@@ -236,7 +238,8 @@ def run_community_detection():
     if G is None or len(G.nodes) == 0:
         print("No graph loaded.")
         return
-    community_detection.detect_and_draw_communities(G)
+    community_detection.detect_and_draw_communities(G, 
+                                                    save_path=None, show=False,image_label=image_label, seed=seed)
 
 ##############################################################################################
 tk.Label(operation1, text="Random Seed",font=20).grid(padx=10, pady=10,row=0, column=0, sticky="w")

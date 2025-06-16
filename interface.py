@@ -8,8 +8,13 @@ import networkx as nx
 
 from pathlib import Path
 import sys
+from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
-sys.path.append(str(BASE_DIR))
+sys.path.append(str(BASE_DIR / 'libs'))
+import importlib.util
+spec = importlib.util.spec_from_file_location('community_detection', str(BASE_DIR / 'libs' / 'community_detection.py'))
+community_detection = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(community_detection)
 
 from libs.closeness import draw_closeness_distribution
 from libs.cluster_coefficient import draw_cluster_coefficient_distribution
@@ -23,7 +28,7 @@ from PIL import Image, ImageTk
 root = Tk()
 root.title("Modeling of Complex Networks")
 # root.iconbitmap("my_icon.ico")
-root.geometry("1200x800+200+100")    
+root.geometry("1400x900+100+50")    # 增大窗口宽高，适配更多控件显示    
 # root.resizable(False, False)
 
 # graph
@@ -33,21 +38,22 @@ image_label=Label(root, image=image)
 image_label.pack()
 
 # operate
-operation = Frame(root, width=1200, height=200)
+operation = Frame(root, width=1500, height=250)
 operation.pack()
+operation.pack_propagate(False)  # 防止内容撑开或收缩
 ##############################################################################################
 
-operation1 = Frame(operation, width=400, height=200,)
+operation1 = Frame(operation, width=480, height=280)
 operation1.grid(row=0, column=0)
-operation1.grid_propagate(0)
+operation1.grid_propagate(False)
 
-operation2 = Frame(operation, width=400, height=200)
+operation2 = Frame(operation, width=480, height=280)
 operation2.grid(row=0, column=1)
-operation2.grid_propagate(0)
+operation2.grid_propagate(False)
 
-operation3 = Frame(operation, width=400, height=200)
+operation3 = Frame(operation, width=480, height=280)
 operation3.grid(row=0, column=2)
-operation3.grid_propagate(0)
+operation3.grid_propagate(False)
 #########################################################
 
 global G, seed
@@ -225,10 +231,12 @@ def intentional_attacks_window():
     attack = Intentional_Attack(operation3,seed, G, )
     attack.window()
 
-
-
-
-
+def run_community_detection():
+    global G
+    if G is None or len(G.nodes) == 0:
+        print("No graph loaded.")
+        return
+    community_detection.detect_and_draw_communities(G)
 
 ##############################################################################################
 tk.Label(operation1, text="Random Seed",font=20).grid(padx=10, pady=10,row=0, column=0, sticky="w")
@@ -268,6 +276,8 @@ tk.Label(operation1, text="Average", font=18).grid(row=4, column=0,  padx=10, pa
 clustering_avg_output = tk.Label(operation1,width=10, text=0, background='white')
 clustering_avg_output.grid(row=4, column=1, pady=5)
 tk.Button(operation1, text="Clustering coefficient distribution", command=show_coefficient_distribution).grid(row=4, column=2, padx=(15,0), pady=5,columnspan=2)
+
+tk.Button(operation1, text="Community Detection", command=run_community_detection).grid(row=5, column=1, padx=5)
 
 ##############################################################################################
 # Degree related layout

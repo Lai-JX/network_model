@@ -1,11 +1,11 @@
 from tkinter import Label
 import networkx as nx
 import matplotlib.pyplot as plt
-from cdlib import algorithms
+from cdlib import algorithms, viz
 import random
 from PIL import Image, ImageTk
 import numpy as np
-from libs.utils import draw_graph
+from libs.utils import draw_graph, plot_network_highlighted_clusters
 
 def detect_and_draw_communities(G, save_path=None, show=True, image_label:Label=None, seed=None):
     """
@@ -52,8 +52,11 @@ def detect_and_draw_communities(G, save_path=None, show=True, image_label:Label=
     ax1.legend(lns, labels, loc='upper right')
     ax1.set_title('Community Size and Density (Louvain, sorted)')
     # 右侧：着色网络图
-    nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=20, ax=ax2)
-    nx.draw_networkx_edges(G, pos, alpha=0.3, ax=ax2)
+    # viz.plot_network_highlighted_clusters(G, communities,pos)
+    plot_network_highlighted_clusters(G, communities,pos, ax=ax2)
+
+    # nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=20, ax=ax2)
+    # nx.draw_networkx_edges(G, pos, alpha=0.3, ax=ax2)
     ax2.set_title('Community Visualization (Louvain)')
     ax2.axis('off')
     plt.tight_layout()

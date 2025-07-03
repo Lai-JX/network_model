@@ -1,11 +1,11 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import random
-random.seed(2025)
+random.seed(2024)
 
-draw_seed = 2025
+draw_seed = 2024
 
-def build_graph(data_path, num_nodes=2000, seed=2025):
+def build_graph(data_path, num_nodes=2000, seed=2024):
     G = nx.Graph()
 
     # 读取txt文件

@@ -61,7 +61,7 @@ global G, seed
 # G = find_subgraph(G)
 # draw_graph(G, 'network.png', False)
 
-dataset_var = tk.IntVar(value=2025)
+dataset_var = tk.IntVar(value=2024)
 
 coefficient_node = tk.StringVar()
 

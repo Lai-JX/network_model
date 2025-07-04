@@ -19,9 +19,33 @@ G = G.subgraph(sorted(nx.connected_components(G), key=len, reverse=True)[0])
 print(f"Number of nodes in G: {G.number_of_nodes()}")
 
 # 2. 使用 cdlib 的 CONGA 算法进行重叠社区检测
-# 可根据需要调整 number_communities 参数
-number_communities = 5
+# 探索不同 number_communities 下的 EQ 得分
+# 结果是33最高，每次运行太耗时，所以先注释
+# k_range = range(20, 50)
+# eq_scores = []
+# for k in k_range:
+#     comms = algorithms.conga(G, number_communities=k)
+#     eq = evaluation.erdos_renyi_modularity(G, comms).score
+#     eq_scores.append(eq)
+
+# plt.figure(figsize=(10,6))
+# plt.plot(list(k_range), eq_scores, marker='o')
+# plt.xlabel('number_communities')
+# plt.ylabel('EQ (Erdos-Renyi Modularity)')
+# plt.title('EQ vs number_communities (CONGA)')
+# plt.grid(True)
+# plt.tight_layout()
+# plt.savefig('./data/overlapping_community_detection_EQ_vs_k.png')
+# plt.show()
+
+# 选择 EQ 最大时的 number_communities
+# best_k = list(k_range)[int(np.argmax(eq_scores))]
+# print(f"Best number_communities (max EQ): {best_k}")
+
+# number_communities = best_k
+number_communities = 33
 communities = algorithms.conga(G, number_communities=number_communities)
+
 
 # 输出整体扩展模块度（EQ）
 eq = evaluation.erdos_renyi_modularity(G, communities).score
@@ -40,7 +64,7 @@ position = nx.spring_layout(G, seed=42)
 viz.plot_network_highlighted_clusters(G, communities, position=position, figsize=(12, 9), node_size=30)
 plt.title(f'Overlapping Community Visualization (CONGA, highlighted clusters, k={number_communities})')
 plt.tight_layout()
-plt.savefig('./data/overlapping_community_colored.png')
+plt.savefig('./data/overlapping_community_detection_highlighted_clusters.png')
 plt.show()
 
 fig, ax1 = plt.subplots(figsize=(12,6))
@@ -64,5 +88,6 @@ labels = [l.get_label() for l in lns]
 ax1.legend(lns, labels, loc='upper right')
 plt.title(f'Overlapping Community Size and Density (CONGA, sorted, k={number_communities})')
 plt.tight_layout()
+plt.savefig('./data/overlapping_community_detection_size_density.png')
 plt.show()
 

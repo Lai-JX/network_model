@@ -74,17 +74,9 @@ def _build_graph():
     global G
     seed = dataset_var.get()
     G = None
-    G, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', 2000, seed)
-    print("before: ", G)
-    G = find_subgraph(G)
-    print("after: ",G)
+    G = build_graph('./data/git_web_ml/musae_git_edges.csv', 2000, seed)
 
-    G = reindex_graph(G)
-    # 记录pos，用于后续上色
-    # pos = nx.spring_layout(G, seed=seed,k=0.15)
-    pos = nx.spring_layout(G, seed=seed)
-    G.pos = pos
-    draw_graph(G, f'./data/network-{seed}.png', False, pos)
+    draw_graph(G, f'./data/network-{seed}.png', False, G.pos)
     _image = ImageTk.PhotoImage(Image.open(f'./data/network-{seed}.png').resize((1200,600)))     # .resize((800,400))
 
     image_label.configure(image = _image)
@@ -241,6 +233,13 @@ def run_community_detection():
         return
     community_detection.detect_and_draw_communities(G, 
                                                     save_path=None, show=True,image_label=image_label, seed=seed)
+def run_overlapping_community_detection():
+    global G
+    if G is None or len(G.nodes) == 0:
+        print("No graph loaded.")
+        return
+    community_detection.detect_and_draw_overlapping_communities(G, 
+                                                    save_path=None, show=True,image_label=image_label, seed=seed)
 
 ##############################################################################################
 tk.Label(operation1, text="Random Seed",font=20).grid(padx=10, pady=10,row=0, column=0, sticky="w")
@@ -281,7 +280,10 @@ clustering_avg_output = tk.Label(operation1,width=10, text=0, background='white'
 clustering_avg_output.grid(row=4, column=1, pady=5)
 tk.Button(operation1, text="Clustering coefficient distribution", command=show_coefficient_distribution).grid(row=4, column=2, padx=(15,0), pady=5,columnspan=2)
 
-tk.Button(operation1, text="Community Detection", command=run_community_detection).grid(row=5, column=1, padx=5)
+community_Frame = Frame(operation1)
+community_Frame.grid(row=5, column=0, columnspan=4)
+tk.Button(community_Frame, text="Non-overlapping Communities", command=run_community_detection).grid(row=0, column=1, padx=(20,10), pady=10)
+tk.Button(community_Frame, text="Overlapping Communities", command=run_overlapping_community_detection).grid(row=0, column=2, padx=10, pady=10)
 
 ##############################################################################################
 # Degree related layout

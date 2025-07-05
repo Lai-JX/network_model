@@ -29,7 +29,18 @@ def build_graph(data_path, num_nodes=2000, seed=2024):
         removed_node = random.sample(list(G.nodes), 1)[0]
         G.remove_node(removed_node)
 
-    return G, nodes
+    print("before: ", G)
+    G = find_subgraph(G)
+    print("after: ",G)
+
+    # reindex the graph to ensure node IDs are continuous and start from 0
+    G = reindex_graph(G)
+
+    # 记录pos，用于后续上色
+    pos = nx.spring_layout(G, seed=seed)
+    G.pos = pos
+
+    return G
 
 # def build_graph(data_path, num_sample=10000, seed=2024,):
 #     G = nx.Graph()
@@ -211,7 +222,7 @@ def reindex_graph(G):
 
     # 获取原始节点列表
     original_nodes = list(G.nodes())
-
+    original_nodes.sort()  # 确保节点按字母顺序排序
     # 创建一个新的图
     new_G = nx.Graph()
 

@@ -13,8 +13,8 @@ from cdlib import algorithms, evaluation, viz
 
 # 1. 构建图
 graph_path = './data/git_web_ml/musae_git_edges.csv'
-G, nodes = build_graph(graph_path)
-G = G.subgraph(sorted(nx.connected_components(G), key=len, reverse=True)[0])
+G = build_graph(graph_path)
+# G = G.subgraph(sorted(nx.connected_components(G), key=len, reverse=True)[0])
 
 print(f"Number of nodes in G: {G.number_of_nodes()}")
 
@@ -60,8 +60,8 @@ for i, (c, d) in enumerate(zip(community_list, community_densities)):
     print(f"Community {i+1}: {len(c)} nodes, density={d:.4f}")
 
 # 使用 cdlib.viz.plot_network_highlighted_clusters 绘制社区高亮图
-position = nx.spring_layout(G, seed=42)
-viz.plot_network_highlighted_clusters(G, communities, position=position, figsize=(12, 9), node_size=30)
+# position = nx.spring_layout(G, seed=42)
+viz.plot_network_highlighted_clusters(G, communities, position=G.pos, figsize=(12, 9), node_size=30)
 plt.title(f'Overlapping Community Visualization (CONGA, highlighted clusters, k={number_communities})')
 plt.tight_layout()
 plt.savefig('./data/overlapping_community_detection_highlighted_clusters.png')

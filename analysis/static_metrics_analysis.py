@@ -14,8 +14,8 @@ sys.path.append(str(BASE_DIR))
 from libs.utils import build_graph
 
 # build graph
-g, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv')
-g = g.subgraph(sorted(nx.connected_components(g), key=len, reverse=True)[0])
+g = build_graph('./data/git_web_ml/musae_git_edges.csv')
+# g = g.subgraph(sorted(nx.connected_components(g), key=len, reverse=True)[0])
 print(g)
 
 # draw graph

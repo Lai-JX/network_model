@@ -1,3 +1,5 @@
+import os
+import pickle
 from tkinter import Label
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -82,17 +84,34 @@ def detect_and_draw_overlapping_communities(G, save_path=None, show=True, image_
     """
     # 社区检测
     number_communities = 33
-    communities = algorithms.conga(G, number_communities=number_communities)
+    res_save_path = f'./data/communities_eq_num{number_communities}_{seed}.pkl'
+    if os.path.exists(res_save_path):
+        with open(res_save_path, 'rb') as f:
+            data = pickle.load(f)
+        eq = data['eq']
+        communities = data['communities']
+        print(f"Loaded eq and community_list from {res_save_path}")
+    else:
+        communities = algorithms.conga(G, number_communities=number_communities)
+        # 输出整体扩展模块度（EQ）
+        eq = evaluation.erdos_renyi_modularity(G, communities).score
+        
+        # 基于pickle将eq和community_list保存起来
+        data = {
+            'eq': eq,
+            'communities': communities
+        }
+        with open(res_save_path, 'wb') as f:
+            pickle.dump(data, f)
+        print(f"eq 和 community_list 已保存到 {res_save_path}")
 
-
-    # 输出整体扩展模块度（EQ）
-    eq = evaluation.erdos_renyi_modularity(G, communities).score
     print(f"EQ (CONGA): {eq:.4f}")
-
     # 统计社区数和每个社区的节点数（已按规模从大到小排序）
     community_list = sorted(communities.communities, key=len, reverse=True)
     community_sizes = [len(c) for c in community_list]
     community_densities = [nx.density(G.subgraph(c)) for c in community_list]
+
+
     print(f"Number of communities: {len(community_list)}")
     for i, (c, d) in enumerate(zip(community_list, community_densities)):
         print(f"Community {i+1}: {len(c)} nodes, density={d:.4f}")

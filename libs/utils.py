@@ -37,7 +37,7 @@ def build_graph(data_path, num_nodes=2000, seed=2024):
     G = reindex_graph(G)
 
     # 记录pos，用于后续上色
-    pos = nx.spring_layout(G, seed=seed)
+    pos = nx.spring_layout(G, seed=seed, k=0.15)
     G.pos = pos
 
     return G

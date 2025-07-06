@@ -26,7 +26,7 @@ def detect_and_draw_communities(G, save_path=None, show=True, image_label:Label=
     for i, c in enumerate(community_list):
         print(f"Community {i+1}: {len(c)} nodes")
     # --- 着色网络图数据准备 ---
-    pos = G.pos if hasattr(G, 'pos') else nx.spring_layout(G, seed=seed)
+    pos = G.pos if hasattr(G, 'pos') else nx.spring_layout(G, seed=seed, k=0.15)
     color_map = {}
     palette = ["#%06x" % random.randint(0, 0xFFFFFF) for _ in range(len(community_list))]
     for idx, comm in enumerate(community_list):
@@ -116,7 +116,7 @@ def detect_and_draw_overlapping_communities(G, save_path=None, show=True, image_
     for i, (c, d) in enumerate(zip(community_list, community_densities)):
         print(f"Community {i+1}: {len(c)} nodes, density={d:.4f}")
     # --- 着色网络图数据准备 ---
-    pos = G.pos if hasattr(G, 'pos') else nx.spring_layout(G, seed=seed)
+    pos = G.pos if hasattr(G, 'pos') else nx.spring_layout(G, seed=seed, k=0.15)
     color_map = {}
     palette = ["#%06x" % random.randint(0, 0xFFFFFF) for _ in range(len(community_list))]
     for idx, comm in enumerate(community_list):
@@ -144,13 +144,14 @@ def detect_and_draw_overlapping_communities(G, save_path=None, show=True, image_
     lns = ln1 + ln2
     labels = [l.get_label() for l in lns]
     ax1.legend(lns, labels, loc='upper right')
+    ax1.set_title(f'Overlapping Community Size and Density (CONGA, sorted, k={number_communities})')
 
     # 使用 cdlib.viz.plot_network_highlighted_clusters 绘制社区高亮图
     # position = nx.spring_layout(G, seed=42)
     plot_network_highlighted_clusters(G, communities, pos, node_size=30, ax=ax2)
 
 
-    ax2.set_title('Community Visualization (Louvain)')
+    ax2.set_title(f'Overlapping Community Visualization (CONGA, highlighted clusters, k={number_communities})')
     ax2.axis('off')
     plt.tight_layout()
     if save_path:

@@ -34,7 +34,7 @@ class Attack_base:
         self.parent_container = parent_container
         self.graph_seed = graph_seed
         self.draw_seed = draw_seed
-        self.pos = nx.spring_layout(G, seed=draw_seed, k=0.15)
+        self.pos = G.pos if 'pos' in G else nx.spring_layout(G, seed=graph_seed, k=0.15)
         self.G = copy.deepcopy(G)
         self._g = copy.deepcopy(G)
 

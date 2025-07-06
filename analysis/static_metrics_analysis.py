@@ -20,7 +20,7 @@ print(g)
 
 # draw graph
 fig, ax = plt.subplots(figsize=(12, 9))
-pos = nx.spring_layout(g, seed=2024)
+pos = nx.spring_layout(g, seed=2024, k=0.15)
 nx.draw_networkx_nodes(g, pos, ax=ax, node_size=20)
 nx.draw_networkx_edges(g, pos, ax=ax, alpha=0.4)
 ax.set_title("Graph", fontsize=24)

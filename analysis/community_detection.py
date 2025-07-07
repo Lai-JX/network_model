@@ -14,8 +14,8 @@ from cdlib import evaluation
 from cdlib import viz
 
 # 1. 构建图
-G, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv')
-G = G.subgraph(sorted(nx.connected_components(G), key=len, reverse=True)[0])
+G = build_graph('./data/git_web_ml/musae_git_edges.csv')
+# G = G.subgraph(sorted(nx.connected_components(G), key=len, reverse=True)[0])
 
 print(f"Number of nodes in G: {G.number_of_nodes()}")
 
@@ -37,8 +37,8 @@ for i, (c, d) in enumerate(zip(community_list, community_densities)):
     print(f"Community {i+1}: {len(c)} nodes, density={d:.4f}")
 
 # 使用 cdlib.viz.plot_network_highlighted_clusters 绘制社区高亮图
-position = nx.spring_layout(G, seed=42)
-viz.plot_network_highlighted_clusters(G, communities, position=position, figsize=(12, 9), node_size=30)
+# position = nx.spring_layout(G, seed=42)
+viz.plot_network_highlighted_clusters(G, communities, position=G.pos, figsize=(12, 9), node_size=30)
 plt.title('Community Visualization (Louvain, highlighted clusters)')
 plt.tight_layout()
 plt.savefig('./data/community_detection_highlighted_clusters.png')

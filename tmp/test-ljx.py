@@ -23,8 +23,7 @@ import numpy as np
 # draw_betweenness_centrality(H)
 
 for i in range(10):
-    G, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', 200, i)
-    G = find_subgraph(G)
+    G = build_graph('./data/git_web_ml/musae_git_edges.csv', 200, i)
     print(nx.average_shortest_path_length(G))
     print(nx.diameter(G))
     print(G)

@@ -234,8 +234,8 @@ class NodeAttacker:
 
 if __name__ == '__main__':
     root = tk.Tk()
-    G, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv')
-    G = G.subgraph(sorted(nx.connected_components(G), key=len, reverse=True)[0])
+    G = build_graph('./data/git_web_ml/musae_git_edges.csv')
+    # G = G.subgraph(sorted(nx.connected_components(G), key=len, reverse=True)[0])
     G = nx.Graph(G)
 
     app = GraphVisualizer(root, graph_seed=42, G_original=G)

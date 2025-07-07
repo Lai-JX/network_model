@@ -12,8 +12,8 @@ sys.path.append(str(BASE_DIR))
 from libs.utils import build_graph
 
 # 构建并保存未被攻击的初始图
-g_original, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv')
-g_original = g_original.subgraph(sorted(nx.connected_components(g_original), key=len, reverse=True)[0])
+g_original = build_graph('./data/git_web_ml/musae_git_edges.csv')
+# g_original = g_original.subgraph(sorted(nx.connected_components(g_original), key=len, reverse=True)[0])
 
 # 初始化攻击次数
 attack_counts = 200

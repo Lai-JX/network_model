@@ -9,5 +9,11 @@ python ./analysis/random_attack_analysis.py
 To reproduce the results from the "Intentional Attack" section, please run the following command:
 python ./analysis/intentional_attack_analysis.py
 
+To reproduce the results from the "Non-overlapping Communities" section, please run the following command:
+python ./analysis/community_detection.py
+
+To reproduce the results from the "Overlapping Communities" section, please run the following command:
+python ./analysis/overlapping_community_detection.py
+
 To Launch the user interface, please run the following command:
 python ./interface.py

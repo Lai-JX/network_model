@@ -8,7 +8,7 @@ sys.path.append(str(BASE_DIR))
 
 from libs.utils import build_graph
 
-G, nodes = build_graph('./data/git_web_ml/musae_git_edges.csv', 2000)
+G = build_graph('./data/git_web_ml/musae_git_edges.csv', 2000)
 print(G)
 
 # 创建Plotly图表

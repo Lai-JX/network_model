@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
 import sys
+from collections import Counter, defaultdict
 
 # 路径设置
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -51,6 +52,35 @@ communities = algorithms.conga(G, number_communities=number_communities)
 eq = evaluation.erdos_renyi_modularity(G, communities).score
 print(f"EQ (CONGA): {eq:.4f}")
 
+# 统计每个节点在重叠社区中出现的次数
+node_overlap_count = Counter()
+for comm in communities.communities:
+    node_overlap_count.update(comm)
+
+# 统计每种重叠次数的节点数量
+count_hist = defaultdict(int)
+for node, cnt in node_overlap_count.items():
+    count_hist[cnt] += 1
+
+# 控制台输出
+print("Node overlap count (number of nodes with given overlap times):")
+for overlap_times in sorted(count_hist):
+    print(f"Overlap {overlap_times}: {count_hist[overlap_times]} nodes")
+
+# 绘制柱状图
+plt.figure(figsize=(10,6))
+x_ticks = np.arange(1, max(count_hist.keys())+1)
+y_vals = [count_hist.get(x, 0) for x in x_ticks]
+plt.bar(x_ticks, y_vals, color='tab:green')
+plt.xlabel('Node Overlap Times')
+plt.ylabel('Number of Nodes')
+plt.title(f'Node Overlap Distribution (CONGA, k={number_communities})')
+plt.xticks(x_ticks)  # 显示所有横坐标
+plt.tight_layout()
+plt.savefig('./data/overlapping_community_detection_node_overlap_hist.png')
+plt.show()
+
+
 # 统计社区数和每个社区的节点数（已按规模从大到小排序）
 community_list = sorted(communities.communities, key=len, reverse=True)
 community_sizes = [len(c) for c in community_list]
@@ -58,6 +88,8 @@ community_densities = [nx.density(G.subgraph(c)) for c in community_list]
 print(f"Number of communities: {len(community_list)}")
 for i, (c, d) in enumerate(zip(community_list, community_densities)):
     print(f"Community {i+1}: {len(c)} nodes, density={d:.4f}")
+
+
 
 # 使用 cdlib.viz.plot_network_highlighted_clusters 绘制社区高亮图
 position = nx.spring_layout(G, seed=42)
@@ -90,4 +122,3 @@ plt.title(f'Overlapping Community Size and Density (CONGA, sorted, k={number_com
 plt.tight_layout()
 plt.savefig('./data/overlapping_community_detection_size_density.png')
 plt.show()
-
